@@ -6,4 +6,5 @@ Handling candidate alerts and metadata for DSA-110. Can create VOEvents and TNS 
 
 - voevent-parse
 - json
+- caltechdata_api
 - requests (eventually; for sending events automatically)
