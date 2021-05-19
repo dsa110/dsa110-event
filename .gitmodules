@@ -1,0 +1,3 @@
+[submodule "FRB_VOEvent"]
+	path = FRB_VOEvent
+	url = https://github.com/caseyjlaw/FRB_VOEvent.git
