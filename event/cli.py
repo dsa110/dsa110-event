@@ -17,4 +17,17 @@ def tns_send(report_filename, production):
 @cli.argument(report_filename)
 @cli.option(--production, type=bool, default=False)
 def ctd_send(report_filename, production):
-    caltechdata.(report_filename)
+    with open(report_filename, 'r') as fp:
+        dd = json.load(fp)
+
+    dictin = dd  # TODO: extract relevant fields from TNS json for ctd
+
+    caltechdata.send_ctd(dictin, production=production)
+
+    
+@cli.command()
+@cli.argument(Id)
+@cli.argument(filenames)
+@cli.option(--production, type=bool, default=False)
+def ctd_upload(Id, filenames, production):
+    caltechdata.edit_ctd(Id, filenames=filenames, production=production)
