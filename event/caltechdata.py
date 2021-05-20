@@ -4,7 +4,7 @@ from os import environ, path
 import datetime
 
 token = environ['TINDTOK']
-_install_dir = path.abspath(os.path.dirname(__file__))
+_install_dir = path.abspath(path.dirname(__file__))
 
 # template metadata
 with open(path.join(_install_dir, 'data/example.json'), 'r') as fp:
