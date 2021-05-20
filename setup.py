@@ -9,5 +9,5 @@ setup(name='dsa110-event',
       entry_points='''
         [console_scripts]
         dsaevent=event.cli:cli
-'''
+      ''',
       zip_safe=False)
