@@ -18,18 +18,17 @@ import json
 from collections import OrderedDict
 import time    
 import sys
-
+from os import environ
 
 ###########################################################################################
 ####################################### PARAMETERS ########################################
 
-#TNS="www.wis-tns.org"
-TNS="sandbox.wis-tns.org"
-url_tns_api="https://"+TNS+"/api"
+TNSproduction="www.wis-tns.org"
+TNSsandbox="sandbox.wis-tns.org"
 
-YOUR_BOT_ID="108557"
-YOUR_BOT_NAME="DSA-110"
-api_key="6a9b2a6e589e62f7d9d0437d4f04a8b3e412c04f"
+YOUR_BOT_ID=environ['TNSGROUPID']
+YOUR_BOT_NAME=environ['TNSNAME']
+api_key=environ['TNSKEY']
 
 list_of_filenames="Here put your list of filenames for uploading."
 report_filename="Here put your report filename."
@@ -40,11 +39,11 @@ id_report="Here put your report ID for getting report's reply."
 # current working directory
 cwd=os.getcwd()
 # folder containing files for uploading
-upload_folder=os.path.join(cwd,'files_for_uploading')
+upload_folder=cwd  #os.path.join(cwd,'files_for_uploading')
 # folder containing tsv reports for sending
-tsv_reports_folder=os.path.join(cwd,'tsv_reports_for_sending')
+tsv_reports_folder=cwd
 # folder containing json reports for sending
-json_reports_folder=os.path.join(cwd,'json_reports_for_sending')
+json_reports_folder=cwd
 
 # http errors
 http_errors={                       
@@ -325,16 +324,19 @@ def enablePrint():
     sys.stdout.close()
     sys.stdout = old_stdout
 
-# sending tsv or json report (at or class) and printing reply
-def send_report(url, report, type_of_report):
+# sending json report (at or class) and printing reply
+def send_report(report, production=False):
     # sending report and checking response
-    print ("Sending "+report+" to the TNS...")
-    # choose which function to call
-    if type_of_report=="tsv":
-        response=send_tsv_report(url,report)
+    if production:
+        url_tns_api="https://"+TNSproduction+"/api"
     else:
-        response=send_json_report(url,report)
+        url_tns_api="https://"+TNSsandbox+"/api"
+
+    print (f"Sending {report} to TNS server {url_tns_api}...")
+
+    response=send_json_report(url, report)
     response_check=check_response(response)
+
     # if report is sent
     if response_check==True:
         print ("The report was sent to the TNS.")
@@ -384,17 +386,6 @@ def upload(url, list_of_files):
 ###########################################################################################
 ###########################################################################################
 
-# EXAMPLE
-
-# ID of your Bot:
-YOUR_BOT_ID=1234
-
-# name of your Bot:
-YOUR_BOT_NAME="My_Bot1"
-
-# API key of your Bot:
-api_key="604d60d302f86eb38fd1407abe41d05b438043bd"
-
 # Comment/Uncomment sections for testing the various examples:
 
 """
@@ -412,32 +403,7 @@ upload(url_tns_api,list_of_filenames)
 # ---------------------------------------------------
 # send AT report
 report_filename="json_at_report.txt"
-report_type="json" 
-# OR 
-report_filename="bulk_tsv_at_report.txt"
-report_type="tsv"
-send_report(url_tns_api,report_filename,report_type)
-# ---------------------------------------------------
-"""
-
-"""
-# ---------------------------------------------------
-# send Classification report
-report_filename="json_classification_report.txt"
-report_type="json"
-# OR 
-report_filename="bulk_tsv_classification_report.txt"
-report_type="tsv"
-send_report(url_tns_api,report_filename,report_type)
-# ---------------------------------------------------
-"""
-
-"""
-# ---------------------------------------------------
-# send FRB report
-report_filename="json_frb_report.txt"
-report_type="json"
-send_report(url_tns_api,report_filename,report_type)
+send_report(report_filename, production)  # production is bool
 # ---------------------------------------------------
 """
 
