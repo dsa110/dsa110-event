@@ -1,20 +1,34 @@
 import os
 import datetime
+import json
 import pytz
 from astropy import time
 import voeventparse as vp
 from xml.dom import minidom
 
 
-def create_voevent(deployment=False, **kwargs):
+def create_voevent(triggerfile=None, deployment=False, **kwargs):
     """ template syntax for voeventparse creation of voevent
     """
 
-    required = ['fluence', 'p_flux', 'ra', 'dec', 'radecerr', 'dm', 'dmerr', 'width', 'snr', 'internalname', 'mjd', 'importance']
-    assert all([k in kwargs for k in required])
+    required = ['internalname', 'mjd', 'dm', 'width', 'snr', 'ra', 'dec', 'radecerr']
+    preferred = ['fluence', 'p_flux', 'importance', 'dmerr']
+
+    # set values
+    dd = kwargs.copy()
+    if triggerfile is not None:
+        with open(triggerfile, 'r') as fp:
+            trigger = json.load(fp)
+        for k, v in trigger.items():  # should be one entry in T2 json trigger file
+            dd['internalname'] = k
+            for kk, vv in v.items():
+                if kk in required + preferred:
+                    dd[kk] = vv
+
+    assert all([k in dd for k in required]), f'Input keys {list(dd.keys())} not complete'
 
     # TODO: set this correctly
-    dt = time.Time(kwargs['mjd'], format='mjd').to_datetime(timezone=pytz.utc)
+    dt = time.Time(dd['mjd'], format='mjd').to_datetime(timezone=pytz.utc)
 
     # create voevent instance
     role = vp.definitions.roles.observation if deployment else vp.definitions.roles.test
@@ -28,64 +42,73 @@ def create_voevent(deployment=False, **kwargs):
                   contactName="Casey Law", contactEmail="claw@astro.caltech.edu"
     )
 
-    fluence = vp.Param(name='fluence',
-                       value=kwargs['fluence'],
-                       unit='Jansky ms',
-                       ucd='em.radio.750-1500MHz', # TODO: check
-                       dataType='float',
-                       ac=False)
-    fluence.Description = 'Fluence'
-
-    p_flux = vp.Param(name='peak_flux',
-                      value=kwargs['p_flux'],
-                      unit='Janskys',
-                      ucd='em.radio.750-1500MHz',
-                      dataType='float',
-                      ac=True
-    )
-    p_flux.Description = 'Peak Flux'
-
+    params = []
     dm = vp.Param(name="dm",
-                  value=kwargs['dm'],
+                  value=str(dd['dm']),
                   unit="pc/cm^3",
                   ucd="phys.dispMeasure;em.radio.750-1500MHz",
                   dataType='float',
                   ac=True
     )
     dm.Description = 'Dispersion Measure'
-    
-    dmerr = vp.Param(name="dm_error",
-                     value=kwargs['dmerr'],
-                     unit="pc/cm^3",
-                     ucd="phys.dispMeasure;em.radio.750-1500MHz",
-                     dataType='float',
-                     ac=True
-    )
-    dmerr.Description = 'Dispersion Measure error'
+    params.append(dm)
 
     width = vp.Param(name="width",
-                     value=kwargs['width'],
+                     value=str(dd['width']),
                      unit="ms",
                      ucd="time.duration;src.var.pulse",
                      dataType='float',
                      ac=True
     )
     width.Description = 'Temporal width of burst'
+    params.append(width)
 
     snr = vp.Param(name="snr",
-                     value=kwargs['snr'],
+                     value=str(dd['snr']),
                      ucd="stat.snr",
                      dataType='float',
                      ac=True
     )
     snr.Description = 'Signal to noise ratio'
+    params.append(snr)
     
-    v.What.append(vp.Group(params=[p_flux, fluence, dm, dmerr, width, snr], name='event parameters'))
+    if 'fluence' in dd:
+        fluence = vp.Param(name='fluence',
+                           value=str(dd['fluence']),
+                           unit='Jansky ms',
+                           ucd='em.radio.750-1500MHz', # TODO: check
+                           dataType='float',
+                           ac=False)
+        fluence.Description = 'Fluence'
+        params.append(fluence)
+
+    if 'p_flux' in dd:
+        p_flux = vp.Param(name='peak_flux',
+                          value=str(dd['p_flux']),
+                          unit='Janskys',
+                          ucd='em.radio.750-1500MHz',
+                          dataType='float',
+                          ac=True
+        )
+        p_flux.Description = 'Peak Flux'
+        params.append(p_flux)
+
+    if 'dmerr' in dd:
+        dmerr = vp.Param(name="dm_error",
+                         value=str(dd['dmerr']),
+                         unit="pc/cm^3",
+                         ucd="phys.dispMeasure;em.radio.750-1500MHz",
+                         dataType='float',
+                         ac=True
+        )
+        dmerr.Description = 'Dispersion Measure error'
+        params.append(dmerr)
+
+    v.What.append(vp.Group(params=params, name='event parameters'))
 
     vp.add_where_when(v,
-                      coords=vp.Position2D(ra=kwargs['ra'], dec=kwargs['dec'], err=kwargs['radecerr'],
-                                           units='deg',
-                                           system=vp.definitions.sky_coord_system.utc_fk5_geo),
+                      coords=vp.Position2D(ra=str(dd['ra']), dec=str(dd['dec']), err=str(dd['radecerr']),
+                                           units='deg', system=vp.definitions.sky_coord_system.utc_fk5_geo),
                       obs_time=dt,
                       observatory_location='OVRO')
 
@@ -98,8 +121,12 @@ def create_voevent(deployment=False, **kwargs):
     vp.add_how(v, descriptions='Discovered with DSA-110',
                references=vp.Reference('http://deepsynoptic.org'))
 
-    vp.add_why(v, importance=kwargs['importance'])
-    v.Why.Name=kwargs['internalname']
+    if 'importance' in dd:
+        vp.add_why(v, importance=str(dd['importance']))
+    else:
+        vp.add_why(v)
+    v.Why.Name=str(dd['internalname'])
+
     vp.assert_valid_as_v2_0(v)
 
     return v
