@@ -19,8 +19,12 @@ def send_ctd(dictin={}, filenames=[], production=False):
     """
 
     # modify basic metadata
+    metadata['alternateIdentifiers'] = [{'alternateIdentifier': internalname,
+                                         'alternateIdentifierType': '?'}]
     metadata['publicationYear'] = datetime.datetime.now().year
+    metadata['dates'] = [{'date': 'yyyy-mm-dd', 'dateType': 'Created'}]  # dateType can also be "Updated"
 
+    
     # overload metadata
     for key, value in dictin.items():
         if key in metadata:

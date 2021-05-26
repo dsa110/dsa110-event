@@ -1,11 +1,11 @@
 {
     "alternateIdentifiers": [
         {
-            "alternateIdentifier": "Alt_Identifier",
+            "alternateIdentifier": "Alt_Identifier",  % e.g., internal names
             "alternateIdentifierType": "Alt_Identifier_Type"
         }
     ],
-    "contributors": [
+    "contributors": [   % anybody who contributed. (e.g., LIGO/Virgo collaboration)
         {
             "affiliations": [ "Affiliation"  ],
             "contributorName": "Contributor Name",
@@ -22,14 +22,14 @@
     "creators": [
         {
             "affiliations": [
-                "Affiliation"
+                "Caltech"
             ],
             "creatorName": "Name",
-            "familyName": "Family Name",
-            "givenName": "Given Name",
+            "familyName": "Law",
+            "givenName": "Casey",
             "nameIdentifiers": [
                 {
-                    "nameIdentifier": "Name Identifier",
+                    "nameIdentifier": "0000-0002-4119-9963",
                     "nameIdentifierScheme": "ORCID",
                     "schemeURI": "http://orcid.org/"
                 }
@@ -38,32 +38,26 @@
     ],
     "dates": [
         {
-            "date": "2014-10-01",
-            "dateType": "Created"
-        },
-        {
-            "date": "2017-03-01",
-            "dateType": "Updated"
-        },
-        {
-            "date": "2012-05-22/2016-12-21",
-            "dateType": "Collected"
+            "date": "yyyy-mm-dd",
+            "dateType": "Created/Updated"
         }
     ],
     "descriptions": [
         {
             "description": "Description",
-            "descriptionType": "Abstract"
+            "descriptionType": "Abstract"   % a bit about what the data is. can enter more than one since it is a list
         }
     ],
     "formats": [
-        "format"
+        "format"   % data format. also a list, since multiple files can be attached to the DOI. zipping into one file is common.
     ],
     "fundingReferences": [
         {
             "funderIdentifier": {
+		"awardTitle": "name",
                 "funderIdentifier": "Funding Identifier",
-                "funderIdentifierType": "GRID"
+		"awardNumber": "NSF...", 
+                "funderIdentifierType": "GRID"   % see https://www.grid.ac/
             },
             "funderName": "Funder Name"
         }
@@ -78,16 +72,16 @@
         }
     ],
     "language": "en",
-    "publicationYear": "2017",
-    "publisher": "Publisher",
+    "publicationYear": "2017",  % current year
+    "publisher": "Caltech Data or OVRO?",   % shows up in citation (like the journal). consider branding.
     "relatedIdentifiers": [
         {
-            "relatedIdentifier": "http://www.url.org/",
+            "relatedIdentifier": "http://www.url.org/",   %  e.g., aggregation of all data
             "relatedIdentifierType": "URL",
             "relationType": "IsPartOf"
         },
         {
-            "relatedIdentifier": "10.5072/FK2",
+            "relatedIdentifier": "10.5072/FK2",  % project web page is probably best here
             "relatedIdentifierType": "DOI",
             "relationType": "IsDocumentedBy"
         }
@@ -97,13 +91,13 @@
     },
     "rightsList": [
         {
-            "rights": "Rights Name",
-            "rightsURI": "Rights List"
+            "rights": "Rights Name",   % Caltech DATA suggests 'CC0 waiver' is most free. CCBy will require attribution.
+		"rightsURI": "Rights List"  % link to license (e.g., https://creativecommons.org/publicdomain/zero/1.0/)
         }
     ],
     "subjects": [
         {
-            "subject": "subject1"
+            "subject": "subject1"   # helps group things. "OVRO" would be nice.
         },
         {
             "subject": "subject2"
