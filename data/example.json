@@ -5,14 +5,14 @@
             "alternateIdentifierType": "Alt_Identifier_Type"
         }
     ],
-    "contributors": [   % anybody who contributed. (e.g., LIGO/Virgo collaboration)
+    "contributors": [
         {
-            "affiliations": [ "Affiliation"  ],
-            "contributorName": "Contributor Name",
-            "contributorType": "ContactPerson",
+            "affiliations": [ "Caltech" ],
+            "contributorName": "Owens Valley Radio Observatory",
+            "contributorType": "",
             "nameIdentifiers": [
                 {
-                    "nameIdentifier": "Contributor Identifier",
+                    "nameIdentifier": "grid.20861.3d",
                     "nameIdentifierScheme": "GRID",
                     "schemeURI": "https://www.grid.ac/institutes/"
                 }
@@ -44,45 +44,38 @@
     ],
     "descriptions": [
         {
-            "description": "Description",
-            "descriptionType": "Abstract"   % a bit about what the data is. can enter more than one since it is a list
+            "description": "Data associated with a DSA-110 candidate transient. This includes...",
+            "descriptionType": "Abstract"
         }
     ],
     "formats": [
-        "format"   % data format. also a list, since multiple files can be attached to the DOI. zipping into one file is common.
+        "zip",
     ],
     "fundingReferences": [
         {
             "funderIdentifier": {
-		"awardTitle": "name",
-                "funderIdentifier": "Funding Identifier",
-		"awardNumber": "NSF...", 
-                "funderIdentifierType": "GRID"   % see https://www.grid.ac/
+                "funderIdentifier": "grid.431093.c",
+                "funderIdentifierType": "GRID"
             },
-            "funderName": "Funder Name"
+            "funderName": "National Science Foundation"
         }
     ],
     "geoLocations": [
         {
             "geoLocationPlace": "Place Name",
             "geoLocationPoint": {
-                "pointLatitude": 0.000,
-                "pointLongitude": 0.000
+                "pointLatitude": 37.2339,
+                "pointLongitude": -118.282
             }
         }
     ],
     "language": "en",
-    "publicationYear": "2017",  % current year
-    "publisher": "Caltech Data or OVRO?",   % shows up in citation (like the journal). consider branding.
+    "publicationYear": 2021,
+    "publisher": "Caltech Data",
     "relatedIdentifiers": [
         {
-            "relatedIdentifier": "http://www.url.org/",   %  e.g., aggregation of all data
+            "relatedIdentifier": "http://deepsynoptic.org",
             "relatedIdentifierType": "URL",
-            "relationType": "IsPartOf"
-        },
-        {
-            "relatedIdentifier": "10.5072/FK2",  % project web page is probably best here
-            "relatedIdentifierType": "DOI",
             "relationType": "IsDocumentedBy"
         }
     ],
@@ -91,26 +84,25 @@
     },
     "rightsList": [
         {
-            "rights": "Rights Name",   % Caltech DATA suggests 'CC0 waiver' is most free. CCBy will require attribution.
-		"rightsURI": "Rights List"  % link to license (e.g., https://creativecommons.org/publicdomain/zero/1.0/)
+            "rights": "CC By 2.0",
+		"rightsURI": "https://creativecommons.org/licenses/by/2.0/"
         }
     ],
     "subjects": [
         {
-            "subject": "subject1"   # helps group things. "OVRO" would be nice.
+            "subject": "OVRO"
         },
         {
-            "subject": "subject2"
+            "subject": "Astrophysics"
+        }
+        {
+            "subject": "Fast Radio Bursts"
         }
     ],
     "titles": [
         {
-            "title": "Title"
+            "title": "DSA-110 Data for a Candidate Fast Radio Burst"
         },
-        {
-            "title": "Alternative Title",
-            "titleType": "AlternativeTitle"
-        }
     ],
     "version": "0"
 }

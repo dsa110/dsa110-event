@@ -23,7 +23,8 @@ def send_ctd(dictin={}, filenames=[], production=False):
                                          'alternateIdentifierType': '?'}]
     metadata['publicationYear'] = datetime.datetime.now().year
     metadata['dates'] = [{'date': 'yyyy-mm-dd', 'dateType': 'Created'}]  # dateType can also be "Updated"
-
+#    metadata['descriptions'][{'description': description, 'descriptionType': 'Abstract']}
+#    metadata['formats'] = ['FITS', 'filterbank', 'png']  # or just one zip?
     
     # overload metadata
     for key, value in dictin.items():
