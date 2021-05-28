@@ -1,7 +1,7 @@
 {
     "alternateIdentifiers": [
         {
-            "alternateIdentifier": "Alt_Identifier",  % e.g., internal names
+            "alternateIdentifier": "Alt_Identifier",
             "alternateIdentifierType": "Alt_Identifier_Type"
         }
     ],
@@ -48,9 +48,7 @@
             "descriptionType": "Abstract"
         }
     ],
-    "formats": [
-        "zip",
-    ],
+    "formats": ["zip"],
     "fundingReferences": [
         {
             "funderIdentifier": {
@@ -69,8 +67,14 @@
             }
         }
     ],
+    "identifiers": [
+	{
+	    "identifier": "your DOI",
+	    "identifierType": "DOI"
+	}
+    ],
     "language": "en",
-    "publicationYear": 2021,
+    "publicationYear": "2021",
     "publisher": "Caltech Data",
     "relatedIdentifiers": [
         {
@@ -94,15 +98,13 @@
         },
         {
             "subject": "Astrophysics"
-        }
+        },
         {
             "subject": "Fast Radio Bursts"
         }
     ],
     "titles": [
-        {
-            "title": "DSA-110 Data for a Candidate Fast Radio Burst"
-        },
+        {"title": "DSA-110 Data for a Candidate Fast Radio Burst"}
     ],
     "version": "0"
 }
