@@ -15,12 +15,12 @@
           "nameType": "Personal",
           "affiliation": [
               {
-                  "name": "DataCite",
-                  "affiliationIdentifier": "https://ror.org/04wxnsj81",
+                  "name": "Caltech",
+                  "affiliationIdentifier": "https://ror.org/05dxps055",
                   "affiliationIdentifierScheme": "ROR"
                 }
               ],
-            "name": "Contributor Name",
+            "name": "Casey Law",
             "contributorType": "ContactPerson",
             "nameIdentifiers": [
                 {
@@ -69,72 +69,63 @@
     ],
     "descriptions": [
         {
-            "description": "Description",
+            "description": "Data associated with a DSA-110 candidate transient. This includes...",
             "descriptionType": "Abstract"
         }
     ],
     "formats": [
-        "format"
+        "zip"
     ],
     "fundingReferences": [
-          {
-            "awardTitle": "Measurement of Column-Averaged CO2",
-            "funderName": "National Aeronautics and Space Administration",
-            "funderIdentifierType": "GRID",
-            "funderIdentifier": "grid.238252.c",
-            "awardNumber": "NAG5-12247"
-          }
+        {
+            "funderIdentifier": {
+                "funderIdentifier": "grid.431093.c",
+                "funderIdentifierType": "GRID"
+            },
+            "funderName": "National Science Foundation"
+        }
     ],
     "geoLocations": [
         {
             "geoLocationPlace": "Place Name",
             "geoLocationPoint": {
-                "pointLatitude": "0.000",
-                "pointLongitude": "0.000"
+                "pointLatitude": "37.2339",
+                "pointLongitude": "-118.282"
             }
         }
     ],
     "language": "en",
     "publicationYear": "2017",
-    "publisher": "Publisher",
+    "publisher": "Caltech Data",
     "relatedIdentifiers": [
         {
-            "relatedIdentifier": "http://www.url.org/",
+            "relatedIdentifier": "http://deepsynoptic.org",
             "relatedIdentifierType": "URL",
-            "relationType": "IsPartOf"
-        },
-        {
-            "relatedIdentifier": "10.5072/FK2",
-            "relatedIdentifierType": "DOI",
             "relationType": "IsDocumentedBy"
         }
     ],
-    "types": {
+    "resourceType": {
         "resourceTypeGeneral": "Dataset",
-        "resourceType": "Dataset"
     },
     "rightsList": [
         {
-            "rights": "Rights Name",
-            "rightsURI": "Rights List"
+            "rights": "CC By 2.0",
+		"rightsURI": "https://creativecommons.org/licenses/by/2.0/"
         }
     ],
     "subjects": [
         {
-            "subject": "subject1"
+            "subject": "OVRO"
         },
         {
-            "subject": "subject2"
+            "subject": "Astrophysics"
+        },
+        {
+            "subject": "Fast Radio Bursts"
         }
     ],
     "titles": [
-        {
-            "title": "Title"
-        },
-        {
-            "title": "Alternative Title",
-            "titleType": "AlternativeTitle"
-        }
+        {"title": "DSA-110 Data for a Candidate Fast Radio Burst"}
     ],
     "version": "0",
     "schemaVersion": "http://datacite.org/schema/kernel-4"
