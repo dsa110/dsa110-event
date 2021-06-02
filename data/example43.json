@@ -1,16 +1,17 @@
 {
   "identifiers": [
-    {
-    "identifier": "10.14291/1",
-    "identifierType": "DOI"
-    }],
+      {
+	  "identifier": "setDOI",
+	  "identifierType": "DOI"
+      }
+  ],
     "alternateIdentifiers": [
         {
             "alternateIdentifier": "Alt_Identifier",
             "alternateIdentifierType": "Alt_Identifier_Type"
         }
     ],
-    "contributors": [
+    "creators": [
         {
           "nameType": "Personal",
           "affiliation": [
@@ -21,34 +22,14 @@
                 }
               ],
             "name": "Casey Law",
+	    "familyName": "Law",
+	    "givenName": "Casey",
             "contributorType": "ContactPerson",
             "nameIdentifiers": [
                 {
-                    "nameIdentifier": "Contributor Identifier",
-                    "nameIdentifierScheme": "GRID",
-                    "schemeUri": "https://www.grid.ac/institutes/"
-                }
-            ]
-        }
-    ],
-    "creators": [
-        {
-          "nameType": "Personal",
-          "affiliation": [
-              {
-                "name": "DataCite",
-                "affiliationIdentifier": "https://ror.org/04wxnsj81",
-                "affiliationIdentifierScheme": "ROR"
-              }
-            ],
-            "name": "Name",
-            "familyName": "Family Name",
-            "givenName": "Given Name",
-            "nameIdentifiers": [
-                {
-                    "nameIdentifier": "Name Identifier",
+                    "nameIdentifier": "0000-0002-4119-9963",
                     "nameIdentifierScheme": "ORCID",
-                    "schemeUri": "http://orcid.org/"
+                    "schemeUri": "https://orcid.org"
                 }
             ]
         }
@@ -78,10 +59,8 @@
     ],
     "fundingReferences": [
         {
-            "funderIdentifier": {
-                "funderIdentifier": "grid.431093.c",
-                "funderIdentifierType": "GRID"
-            },
+            "funderIdentifier": "grid.431093.c",
+            "funderIdentifierType": "GRID",
             "funderName": "National Science Foundation"
         }
     ],
@@ -104,8 +83,9 @@
             "relationType": "IsDocumentedBy"
         }
     ],
-    "resourceType": {
+    "types": {
         "resourceTypeGeneral": "Dataset",
+	"resourceType": "Dataset"
     },
     "rightsList": [
         {
