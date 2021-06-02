@@ -60,7 +60,7 @@
     ],
     "geoLocations": [
         {
-            "geoLocationPlace": "Place Name",
+            "geoLocationPlace": "OVRO",
             "geoLocationPoint": {
                 "pointLatitude": 37.2339,
                 "pointLongitude": -118.282
