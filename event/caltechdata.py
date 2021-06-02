@@ -22,6 +22,18 @@ def send_ctd(dictin={}, filenames=[], production=False):
     Upload takes time, so can be left blank and loaded alter via "edit_ctd" function.
     """
 
+    metadata = get_metadata(dictin)
+
+    # write metadata
+    res = caltechdata_write(metadata, token, filenames, production=production)  # schema="43" if using new affiliation
+    Id = res.rstrip('. ').split('/')[-1]
+
+    return Id
+
+def get_metadata(dictin):
+    """ 
+    """
+
     # modify basic metadata
     metadata['alternateIdentifiers'] = [{'alternateIdentifier': internalname,
                                          'alternateIdentifierType': '?'}]
@@ -39,11 +51,7 @@ def send_ctd(dictin={}, filenames=[], production=False):
     doi = get_doi(metadata)  # TODO: check whether it is returned or just added to metadata dict
     metadata['identifiers'] = [{'identifier': doi, 'identifierType': 'DOI'}]  
 
-    # write metadata
-    res = caltechdata_write(metadata, token, filenames, production=production)  # schema="43" if using new affiliation
-    Id = res.rstrip('. ').split('/')[-1]
-
-    return Id
+    return metadata
 
 
 def get_doi(metadata, url=dcurl):
