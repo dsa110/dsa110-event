@@ -50,7 +50,7 @@ def set_metadata(dictin=None, internalname=None, doi=None, schema='43'):
         metadata['alternateIdentifiers'] = [{'alternateIdentifier': internalname,
                                              'alternateIdentifierType': '?'}]
     dt = datetime.datetime.now()
-    metadata['publicationYear'] = dt.year
+    metadata['publicationYear'] = str(dt.year)
     metadata['dates'] = [{'date': f'{dt.year}-{dt.month:02}-{dt.day:02}', 'dateType': 'Created'}]  # dateType can also be "Updated"
     #    metadata['formats'] = ['FITS', 'filterbank', 'png']  # or just one zip?
 
