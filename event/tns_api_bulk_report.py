@@ -132,7 +132,7 @@ def send_tsv_report(url,tsv_report):
     return [None,'Error message : \n'+str(e)]
 
 # function for sending json reports (AT or Classification)
-def send_json_report(url,json_report):
+def send_json_report(url, json_report):
   try:
     # url for sending json reports
     json_url=url+'/bulk-report'
@@ -140,7 +140,8 @@ def send_json_report(url,json_report):
     headers={'User-Agent':'tns_marker{"tns_id":'+str(YOUR_BOT_ID)+', "type":"bot",'\
              ' "name":"'+YOUR_BOT_NAME+'"}'}    
     # json report file path
-    json_file_path=os.path.join(json_reports_folder,json_report)
+    json_file_path=os.path.join(json_reports_folder, json_report)
+    assert os.path.exists(json_file_path)
     # read json data from file
     json_read=format_to_json(open(json_file_path).read())
     # construct a dictionary of api key data and json data
@@ -328,22 +329,22 @@ def enablePrint():
 def send_report(report, production=False):
     # sending report and checking response
     if production:
-        url_tns_api="https://"+TNSproduction+"/api"
+        url="https://"+TNSproduction+"/api"
     else:
-        url_tns_api="https://"+TNSsandbox+"/api"
+        url="https://"+TNSsandbox+"/api"
 
-    print (f"Sending {report} to TNS server {url_tns_api}...")
+    print (f"Sending {report} to TNS server {url}...")
 
-    response=send_json_report(url, report)
-    response_check=check_response(response)
+    response = send_json_report(url, report)
+    response_check = check_response(response)
 
     # if report is sent
-    if response_check==True:
+    if response_check == True:
         print ("The report was sent to the TNS.")
         # report response as json data
-        json_data=response.json()
+        json_data = response.json()
         # taking report id
-        report_id=str(json_data['data']['report_id'])
+        report_id = str(json_data['data']['report_id'])
         print ("Report ID = "+report_id)
         print ("")
         # sending report id to get reply of the report
@@ -354,15 +355,17 @@ def send_report(report, production=False):
         counter = 0
         while True:
             time.sleep(SLEEP_SEC)
-            reply_response=reply(url,report_id)
-            reply_res_check=check_response(reply_response)
-            if reply_res_check!=False or counter >= LOOP_COUNTER:
+            reply_response = reply(url, report_id)
+            reply_res_check = check_response(reply_response)
+            if reply_res_check != False or counter >= LOOP_COUNTER:
                 break
             counter += 1
         enablePrint()
-        print_reply(url,report_id)
+        print_reply(url, report_id)
+        return report_id
     else:
         print ("The report was not sent to the TNS.")
+        return None
 
 # uploading files and printing reply
 def upload(url, list_of_files):

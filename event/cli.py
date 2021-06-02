@@ -34,7 +34,11 @@ def send_voevent(inname, destination):
 @click.argument('report_filename')
 @click.option('--production', type=bool, default=False)
 def tns_send(report_filename, production):
-    tns_api_bulk_report.send_report(report_filename, production)
+    """ Send event to TNS to be named.
+    report_filename is JSON format file with TNS metadata.
+    """
+
+    result = tns_api_bulk_report.send_report(report_filename, production)
 
 
 @cli.command()
