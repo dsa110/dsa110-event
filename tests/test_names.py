@@ -6,7 +6,7 @@ from astropy import time
 
 def test_lastname():
     name = names.get_lastname()
-    assert name is None  # only works if nothing set in etcd
+    assert name is None or type(name) == str
 
 
 def test_newnamet():
