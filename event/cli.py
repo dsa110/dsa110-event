@@ -45,6 +45,10 @@ def tns_send(report_filename, production):
 @click.argument('report_filename')
 @click.option('--production', type=bool, default=False)
 def ctd_send(report_filename, production):
+    """ Create entry at Caltech Data for data set
+    An entry will be identified by an Id (integer).
+    """
+
     with open(report_filename, 'r') as fp:
         dd = json.load(fp)
 
@@ -58,4 +62,8 @@ def ctd_send(report_filename, production):
 @click.argument('filenames')
 @click.option('--production', type=bool, default=False)
 def ctd_upload(Id, filenames, production):
+    """ Edit entry at Caltech Data for data set to upload data given by filenames.
+    Id is an integer that defines the Caltech Data entry.
+    """
+
     caltechdata.edit_ctd(Id, filenames=filenames, production=production)
