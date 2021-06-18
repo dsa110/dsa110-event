@@ -11,7 +11,7 @@ def create_voevent(triggerfile=None, deployment=False, **kwargs):
     """ template syntax for voeventparse creation of voevent
     """
 
-    required = ['internalname', 'mjd', 'dm', 'width', 'snr', 'ra', 'dec', 'radecerr']
+    required = ['internalname', 'mjds', 'dm', 'width', 'snr', 'ra', 'dec', 'radecerr']
     preferred = ['fluence', 'p_flux', 'importance', 'dmerr']
 
     # set values
@@ -19,16 +19,17 @@ def create_voevent(triggerfile=None, deployment=False, **kwargs):
     if triggerfile is not None:
         with open(triggerfile, 'r') as fp:
             trigger = json.load(fp)
+
         for k, v in trigger.items():  # should be one entry in T2 json trigger file
             dd['internalname'] = k
             for kk, vv in v.items():
                 if kk in required + preferred:
                     dd[kk] = vv
 
-    assert all([k in dd for k in required]), f'Input keys {list(dd.keys())} not complete'
+    assert all([k in dd for k in required]), f'Input keys {list(dd.keys())} not complete (requires {required})'
 
     # TODO: set this correctly
-    dt = time.Time(dd['mjd'], format='mjd').to_datetime(timezone=pytz.utc)
+    dt = time.Time(dd['mjds'], format='mjd').to_datetime(timezone=pytz.utc)
 
     # create voevent instance
     role = vp.definitions.roles.observation if deployment else vp.definitions.roles.test
