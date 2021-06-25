@@ -367,6 +367,21 @@ def send_report(report, production=False):
         print ("The report was not sent to the TNS.")
         return None
 
+
+def get_reply(Id, production=False):
+    """ Wrap reply function for same syntax as send_report
+    """
+
+    if production:
+        url="https://"+TNSproduction+"/api"
+    else:
+        url="https://"+TNSsandbox+"/api"
+
+    resp = reply(url, Id)
+
+    return resp
+
+
 # uploading files and printing reply
 def upload(url, list_of_files):
     # upload files and checking response
