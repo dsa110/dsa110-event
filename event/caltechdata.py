@@ -4,10 +4,6 @@ import datetime
 from datacite import DataCiteRESTClient
 from caltechdata_api import caltechdata_edit, caltechdata_write
 
-# for test.datacite.org
-dcprefix = '10.22013'
-dcurl = 'http://doi.test.datacite.org'
-
 dcp = environ['DATACITEPWD']
 token = environ['TINDTOK']
 _install_dir = path.abspath(path.dirname(__file__))
@@ -75,9 +71,23 @@ def set_metadata(dictin=None, internalname=None, doi=None, schema='43'):
     return metadata
 
 
-def get_doi(metadata, url=dcurl):
+def get_doi(metadata, production=False):
     """ Use datacite to get DOI for metadata
     """
 
-    d = DataCiteRESTClient(username='CALTECH.OVRO', password=dcp, prefix=dcprefix, test_mode=True)
+    # development
+    dcprefix_dev = '10.22013'
+    dcurl_dev = 'http://doi.test.datacite.org'
+    # production
+    dcprefix_prod = '10.26800'
+    dcurl_prod = 'http://doi.datacite.org'
+
+    if production:
+        url = dcurl_prod
+        prefix = dcprefix_prod
+    else:
+        url = dcurl_dev
+        prefix = dcprefix_dev
+
+    d = DataCiteRESTClient(username='CALTECH.OVRO', password=dcp, prefix=prefix, test_mode=(not production))
     return d.public_doi(metadata, url)
