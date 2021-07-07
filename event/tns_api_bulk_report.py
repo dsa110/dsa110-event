@@ -34,7 +34,7 @@ except KeyError:
     YOUR_BOT_ID=None
     YOUR_BOT_NAME=None
     api_key=None
-    print('Secrets not found. APIs will not work.')
+    print('Secrets not found. TNS APIs will not work.')
 
 list_of_filenames="Here put your list of filenames for uploading."
 report_filename="Here put your report filename."

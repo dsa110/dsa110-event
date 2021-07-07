@@ -4,8 +4,14 @@ import datetime
 from datacite import DataCiteRESTClient
 from caltechdata_api import caltechdata_edit, caltechdata_write
 
-dcp = environ['DATACITEPWD']
-token = environ['TINDTOK']
+try:
+    dcp = environ['DATACITEPWD']
+    token = environ['TINDTOK']
+except KeyError:
+    dcp = None
+    token = None
+    print('Secrets not found. Cannot use datacite API')
+
 _install_dir = path.abspath(path.dirname(__file__))
 
 
