@@ -1,3 +1,3 @@
-__all__ = ['voevent', 'names', 'tns_api_bulk_report', 'caltechdata']
+__all__ = ['voevent', 'names', 'caltechdata']
 
 from event import *
