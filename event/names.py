@@ -27,6 +27,7 @@ def increment_name(mjd, lastname=None, suffixlength=4):
         suffix = string.ascii_lowercase[0]*suffixlength
     else:
         yymmdd = lastname[:-suffixlength]
+        print(f'yymmdd: {yymmdd}')
         dt0 = datetime.datetime(int('20'+yymmdd[0:2]), int(yymmdd[2:4]), int(yymmdd[4:6]))
         if dt.year > dt0.year or dt.month > dt0.month or dt.day > dt0.day:
             # new day, so name starts over
