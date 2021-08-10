@@ -1,0 +1,4 @@
+caltechdata_api
+requests
+voevent-parse
+datacite
