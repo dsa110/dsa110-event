@@ -1,8 +1,14 @@
 import json
 from os import environ, path
 import datetime
-from datacite import DataCiteRESTClient
-from caltechdata_api import caltechdata_edit, caltechdata_write
+try:
+    from datacite import DataCiteRESTClient
+except ImportError:
+    print('datacite not found. cannot create DOIs')
+try:
+    from caltechdata_api import caltechdata_edit, caltechdata_write
+except ImportError:
+    print('caltechdata_api not found.')
 
 try:
     dcp = environ['DATACITEPWD']

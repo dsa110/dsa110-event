@@ -1,5 +1,5 @@
 import click
-from event import tns_api_bulk_report, caltechdata, voevent
+from event import tns_api_bulk_report, caltechdata, voevent, labels
 
 @click.group('dsaevent')
 def cli():
@@ -14,8 +14,7 @@ def create_voevent(inname, outname, production):
     Required fields: fluence, p_flux, ra, dec, radecerr, dm, dmerr, width, snr, internalname, mjd, importance
     """
 
-    with open(inname, 'r') as fp:
-        indict = json.load(fp)
+    indict = labels.readfile(inname)
     ve = voevent.create_voevent(production=production, **indict)
     voevent.create_voevent(ve, outname=outname)
 

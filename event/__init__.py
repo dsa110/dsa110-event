@@ -1,3 +1,3 @@
-__all__ = ['voevent', 'names', 'caltechdata']
+__all__ = ['voevent', 'names', 'caltechdata', 'labels']
 
 from event import *

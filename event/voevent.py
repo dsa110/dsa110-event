@@ -3,8 +3,12 @@ import datetime
 import json
 import pytz
 from astropy import time
-import voeventparse as vp
 from xml.dom import minidom
+from event import labels
+try:
+    import voeventparse as vp
+except ImportError:
+    print("voeventparse not available. cannot create voevents")
 
 
 def create_voevent(triggerfile=None, deployment=False, **kwargs):
@@ -17,8 +21,7 @@ def create_voevent(triggerfile=None, deployment=False, **kwargs):
     # set values
     dd = kwargs.copy()
     if triggerfile is not None:
-        with open(triggerfile, 'r') as fp:
-            trigger = json.load(fp)
+        trigger = labels.readfile(triggerfile)
 
         for k, v in trigger.items():  # should be one entry in T2 json trigger file
             dd['internalname'] = k
