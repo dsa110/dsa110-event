@@ -8,3 +8,11 @@ Handling candidate alerts and metadata for DSA-110. Can create VOEvents, TNS (js
 - [caltechdata_api](https://github.com/caltechlibrary/caltechdata_api)
 - [datacite](https://github.com/inveniosoftware/datacite)
 - requests (eventually; for sending events automatically)
+
+# Installation
+
+```
+<git clone dsa110-event and cd into directory>
+pip install -r requirements.txt
+python setup.py install
+```
