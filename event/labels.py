@@ -55,13 +55,34 @@ def set_label(candname, label, filename=None):
     dd = readfile(filename)
 
     if candname in dd.keys():
-        if label == 'archive':
+        if label == 'save':
             dd[candname][label] = True
         else:
             dd[candname]['label'] = label
         writefile(dd, filename)
     else:
         print(f'candname {candname} not found in {filename}. no label applied.')
+
+
+def set_probability(candname, probability, filename=None):
+    """ Read, sets probability valuel, and write candidate json file.
+    Can optionally provide full path to file.
+    Default assumes name of <candname>.json in cwd.
+    TODO: decide if file can have more than one candname.
+    """
+
+    if filename is None:
+        filename = f'{candname}.json'
+
+    assert os.path.exists(filename), f'candidate json file {filename} not found'
+
+    dd = readfile(filename)
+
+    if candname in dd.keys():
+        dd[candname]['probability'] = probability
+        writefile(dd, filename)
+    else:
+        print(f'candname {candname} not found in {filename}. no probability set.')
         
         
 
