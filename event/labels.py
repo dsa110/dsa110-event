@@ -22,7 +22,7 @@ def check_voltages(candname):
 
     filename = f'/home/ubuntu/data/T3/{candname}.json'
     assert os.path.exists(filename), f'candidate json file {filename} not found'
-    dd = readfile(filename)
+    dd = readfile(filename=filename, candname=candname)
     
     corrs = ['corr03','corr04','corr05','corr06','corr07','corr08','corr10','corr11','corr12','corr14','corr15','corr16','corr18','corr19','corr21','corr22']
 
@@ -41,11 +41,17 @@ def check_voltages(candname):
     writefile(dd, filename)
 
 
-def readfile(filename):
-    """ Read candidate json trigger file and return dict
-    Also accepts npy file
+def readfile(filename=None, candname=None, datadir='/home/ubuntu/data/T3'):
+    """ Read candidate json trigger file and return dict.
+    Also accepts npy file.
+    datadir defaults to h23 file location.
     TODO: add file lock?
     """
+
+    if filename is None and candname is not None:
+        filename = f'{datadir}/{candname}.json'
+
+    assert os.path.exists(filename), f'candidate json file {filename} not found'
 
     try:
         with open(filename, 'r') as fp:
@@ -53,8 +59,9 @@ def readfile(filename):
         return dd
     except:
         print('File is not json')
+
     try:
-        dd = np.load(filename,allow_pickle=True)
+        dd = np.load(filename, allow_pickle=True)
         return dd.tolist()
     except:
         print('File is not .npy')
@@ -69,20 +76,19 @@ def writefile(dd, filename):
         json.dump(dd, fp)
 
 
-def list_cands_labels(filename):
+def list_cands_labels(candname=None, filename=None):
     """ read json file and list all candidates and labels.
     TODO: decide if more than one allowed
     """
     
-    dd = readfile(filename)
-    candnames = list(dd.keys())
-    for candname in candnames:
-        labels = [kk for kk in dd[candname].keys() if kk in _allowed]
-        if len(labels):
-            labelstr = ', '.join(labels)
-        else:
-            labelstr = 'no labels'
-        print(f'{candname}: {labelstr}')
+    dd = readfile(filename=filename, candname=candname)
+
+    labels = [vv for (kk, vv) in dd.items() if kk in _allowed]
+    if len(labels):
+        labelstr = ', '.join(labels)
+    else:
+        labelstr = 'no labels'
+    print(f'{candname}: {labelstr}')
 
 
 def set_label(candname, label, filename=None):
@@ -94,12 +100,7 @@ def set_label(candname, label, filename=None):
 
     assert label in _allowed, f'label must be in {_allowed}'
 
-    if filename is None:
-        filename = f'/home/ubuntu/data/T3/{candname}.json'
-
-    assert os.path.exists(filename), f'candidate json file {filename} not found'
-
-    dd = readfile(filename)
+    dd = readfile(filename=filename, candname=candname)
 
     if label == 'save':
         dd[label] = True
@@ -115,12 +116,7 @@ def set_notes(candname, notes, filename=None):
     TODO: decide if file can have more than one candname.
     """
 
-    if filename is None:
-        filename = f'/home/ubuntu/data/T3/{candname}.json'
-
-    assert os.path.exists(filename), f'candidate json file {filename} not found'
-
-    dd = readfile(filename)
+    dd = readfile(filename=filename, candname=candname)
     dd['notes'] = notes
     writefile(dd, filename)
 
@@ -132,12 +128,6 @@ def set_probability(candname, probability, filename=None):
     TODO: decide if file can have more than one candname.
     """
 
-    if filename is None:
-        filename = f'/home/ubuntu/data/T3/{candname}.json'
-
-    assert os.path.exists(filename), f'candidate json file {filename} not found'
-
-    dd = readfile(filename)
-
+    dd = readfile(filename=filename, candname=candname)
     dd[candname]['probability'] = probability
     writefile(dd, filename)
