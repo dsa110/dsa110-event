@@ -129,5 +129,5 @@ def set_probability(candname, probability, filename=None):
     """
 
     dd = readfile(filename=filename, candname=candname)
-    dd[candname]['probability'] = probability
+    dd['probability'] = probability
     writefile(dd, filename)
