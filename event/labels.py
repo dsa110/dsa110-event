@@ -76,21 +76,6 @@ def writefile(dd, filename):
         json.dump(dd, fp)
 
 
-def list_cands_labels(candname=None, filename=None):
-    """ read json file and list all candidates and labels.
-    TODO: decide if more than one allowed
-    """
-    
-    dd = readfile(filename=filename, candname=candname)
-
-    labels = [vv for (kk, vv) in dd.items() if kk in _allowed]
-    if len(labels):
-        labelstr = ', '.join(labels)
-    else:
-        labelstr = 'no labels'
-    print(f'{candname}: {labelstr}')
-
-
 def set_label(label, candname=None, filename=None):
     """ Read, add label, and write candidate json file.
     Can optionally provide full path to file.
