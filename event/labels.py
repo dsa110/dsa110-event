@@ -91,7 +91,7 @@ def list_cands_labels(candname=None, filename=None):
     print(f'{candname}: {labelstr}')
 
 
-def set_label(candname, label, filename=None):
+def set_label(label, candname=None, filename=None):
     """ Read, add label, and write candidate json file.
     Can optionally provide full path to file.
     Default assumes name of <candname>.json in cwd.
@@ -109,7 +109,7 @@ def set_label(candname, label, filename=None):
     writefile(dd, filename)
         
         
-def set_notes(candname, notes, filename=None):
+def set_notes(notes, candname=None, filename=None):
     """ Read, add notes, and write candidate json file.
     Can optionally provide full path to file.
     Default assumes name of <candname>.json in cwd.
@@ -121,7 +121,7 @@ def set_notes(candname, notes, filename=None):
     writefile(dd, filename)
 
 
-def set_probability(candname, probability, filename=None):
+def set_probability(prob, candname=None, filename=None):
     """ Read, sets probability valuel, and write candidate json file.
     Can optionally provide full path to file.
     Default assumes name of <candname>.json in cwd.
@@ -129,5 +129,5 @@ def set_probability(candname, probability, filename=None):
     """
 
     dd = readfile(filename=filename, candname=candname)
-    dd['probability'] = probability
+    dd['probability'] = prob
     writefile(dd, filename)
