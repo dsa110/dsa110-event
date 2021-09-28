@@ -38,7 +38,7 @@ def check_voltages(candname):
             dd[corr+'_header'] = True
             print('Found header:', corr)
 
-    writefile(dd, filename)
+    writefile(dd, candname=candname, filename=filename)
 
 
 def readfile(filename=None, candname=None, datadir='/home/ubuntu/data/T3'):
@@ -68,9 +68,14 @@ def readfile(filename=None, candname=None, datadir='/home/ubuntu/data/T3'):
         return None
         
 
-def writefile(dd, filename):
+def writefile(dd, candname=None, filename=None):
     """ Write candidate json trigger file with dict
     """
+
+    if filename is None and candname is not None:
+        filename = f'{datadir}/{candname}.json'
+
+    assert os.path.exists(filename), f'candidate json file {filename} not found'
 
     with open(filename, 'w') as fp:
         json.dump(dd, fp)
@@ -91,7 +96,7 @@ def set_label(label, candname=None, filename=None):
         dd[label] = True
     else:
         dd['label'] = label
-    writefile(dd, filename)
+    writefile(dd, candname=candname, filename=filename)
         
         
 def set_notes(notes, candname=None, filename=None):
@@ -103,7 +108,7 @@ def set_notes(notes, candname=None, filename=None):
 
     dd = readfile(filename=filename, candname=candname)
     dd['notes'] = notes
-    writefile(dd, filename)
+    writefile(dd, candname=candname, filename=filename)
 
 
 def set_probability(prob, candname=None, filename=None):
@@ -115,4 +120,4 @@ def set_probability(prob, candname=None, filename=None):
 
     dd = readfile(filename=filename, candname=candname)
     dd['probability'] = prob
-    writefile(dd, filename)
+    writefile(dd, candname=candname, filename=filename)
