@@ -68,7 +68,7 @@ def readfile(filename=None, candname=None, datadir='/home/ubuntu/data/T3'):
         return None
         
 
-def writefile(dd, candname=None, filename=None):
+def writefile(dd, candname=None, filename=None, datadir='/home/ubuntu/data/T3'):
     """ Write candidate json trigger file with dict
     """
 
