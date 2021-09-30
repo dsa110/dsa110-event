@@ -38,12 +38,12 @@ def find_associations(ra, dec, mode='both', nvss_radius=60, nvss_flux=400, atnf_
         print("Comparing SkyCoord for candidates to NVSS.")
         ind, sep2, sep3 = coord.match_to_catalog_sky(catalogn)
         if sep2.value < nvss_radius and fluxesn[ind] > nvss_flux:
-            associations.append(catalogn[ind], sep2.value)
+            associations.append((catalogn[ind], sep2.value))
 
     if mode.lower() in ['pulsar', 'both']:
         print("Comparing SkyCoord for candidates to ATNF.")
         ind, sep2, sep3 = coord.match_to_catalog_sky(cataloga)
         if sep2.value < atnf_radius:
-            associations.append(cataloga[ind], sep2.value)
+            associations.append((cataloga[ind], sep2.value))
 
     return associations
