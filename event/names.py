@@ -27,7 +27,6 @@ def increment_name(mjd, lastname=None, suffixlength=4):
         suffix = string.ascii_lowercase[0]*suffixlength
     else:
         yymmdd = lastname[:-suffixlength]
-        print(f'yymmdd: {yymmdd}')
         dt0 = datetime.datetime(int('20'+yymmdd[0:2]), int(yymmdd[2:4]), int(yymmdd[4:6]))
         if dt.year > dt0.year or dt.month > dt0.month or dt.day > dt0.day:
             # new day, so name starts over
@@ -38,8 +37,10 @@ def increment_name(mjd, lastname=None, suffixlength=4):
             lastnumber = suffixtonumber(lastsuffix)
             suffix = f'{numbertosuffix(lastnumber+1):a>4}'  # increment name
 
-    return f'{str(dt.year)[2:]}{dt.month:02d}{dt.day:02d}{suffix}'
+    newname = f'{str(dt.year)[2:]}{dt.month:02d}{dt.day:02d}{suffix}'
+    print(f'Incrementing name from "{lastname}" to "{newname}".')
 
+    return newname
 
 def suffixtonumber(suffix):
     """ Given a set of ascii_lowercase values, get a base 26 number.
