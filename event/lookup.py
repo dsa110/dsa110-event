@@ -3,7 +3,7 @@ import pickle
 import os
 
 def find_associations(ra, dec, mode='both', nvss_radius=60, nvss_flux=400, atnf_radius=60,
-                      nvsscat='nvss_astropy.pkl', atnfcat='atnfcat_v1.56.txt'):
+                      nvsscat='nvss_astropy.pkl', atnfcat='atnfcat_v1.56.txt', workdir=''):
     """ Find cataloged NVSS/pulsar sources near (RA, Dec) in degrees.
     Major check is for bright NVSS sources during VLASS (mode='nvss')
     For mode='pulsar', it will return any pulsar in atnf catalog.
@@ -11,7 +11,6 @@ def find_associations(ra, dec, mode='both', nvss_radius=60, nvss_flux=400, atnf_
     Returns boolean (for now)
     """
 
-    workdir = ''
     assert mode.lower() in ['pulsar', 'nvss', 'both']
 
     if os.path.exists(workdir + nvsscat) and mode.lower() in ['nvss', 'both']:
@@ -38,12 +37,13 @@ def find_associations(ra, dec, mode='both', nvss_radius=60, nvss_flux=400, atnf_
         print("Comparing SkyCoord for candidates to NVSS.")
         ind, sep2, sep3 = coord.match_to_catalog_sky(catalogn)
         if sep2 < nvss_radius*units.arcsec and fluxesn[ind] > nvss_flux:
-            associations.append(('nvss', catalogn[ind], sep2.value))
+            associations.append(['nvss', catalogn[ind], sep2.value, fluxesn[ind]])
 
     if mode.lower() in ['pulsar', 'both']:
         print("Comparing SkyCoord for candidates to ATNF.")
         ind, sep2, sep3 = coord.match_to_catalog_sky(cataloga)
         if sep2 < atnf_radius*units.arcsec:
-            associations.append(('atnf', cataloga[ind], sep2.value))
+            name, dm = tab[ind][['PSRJ', 'DM']]
+            associations.append(['atnf', cataloga[ind], sep2.value, name, dm])
 
     return associations
