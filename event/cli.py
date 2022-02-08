@@ -1,9 +1,37 @@
+import json
 import click
 from event import tns_api_bulk_report, caltechdata, voevent, labels
 
 @click.group('dsaevent')
 def cli():
     pass
+
+
+@cli.command()
+@click.argument('triggerfile')
+@click.option('--production', type=bool, default=False)
+@click.option('--doi', type=str, default=None)
+def ctd_send(triggerfile, production, doi):
+    """ Create entry at Caltech Data for data set
+    An entry will be identified by an Id (integer).
+    Requires triggerfile (as on h23)
+    """
+
+    idv = caltechdata.send_ctd(triggerfile=triggerfile, production=production, doi=doi)
+    print(f'Triggerfile {triggerfile} uploaded as idv {idv}.')
+
+
+@cli.command()
+@click.argument('idv')
+@click.argument('filenames')
+@click.option('--production', type=bool, default=False)
+def ctd_upload(idv, filenames, production):
+    """ Edit entry at Caltech Data for data set to upload data given by filenames.
+    idv is an integer that defines the Caltech Data entry.
+    """
+
+    caltechdata.edit_ctd(idv, filenames=filenames, production=production)
+
 
 @cli.command()
 @click.argument('inname')
@@ -14,9 +42,9 @@ def create_voevent(inname, outname, production):
     Required fields: fluence, p_flux, ra, dec, radecerr, dm, dmerr, width, snr, internalname, mjd, importance
     """
 
-    indict = labels.readfile(inname)
-    ve = voevent.create_voevent(production=production, **indict)
-    voevent.create_voevent(ve, outname=outname)
+    dd = caltechdata.set_metadata(triggerfile=inname)
+    ve = voevent.create_voevent(production=production, **dd)
+    voevent.write_voevent(ve, outname=outname)
 
 
 @cli.command()
@@ -38,31 +66,3 @@ def tns_send(report_filename, production):
     """
 
     result = tns_api_bulk_report.send_report(report_filename, production)
-
-
-@cli.command()
-@click.argument('report_filename')
-@click.option('--production', type=bool, default=False)
-def ctd_send(report_filename, production):
-    """ Create entry at Caltech Data for data set
-    An entry will be identified by an Id (integer).
-    """
-
-    with open(report_filename, 'r') as fp:
-        dd = json.load(fp)
-
-    dictin = dd  # TODO: extract relevant fields from TNS json for ctd
-
-    caltechdata.send_ctd(dictin, production=production)
-
-    
-@cli.command()
-@click.argument('Id')
-@click.argument('filenames')
-@click.option('--production', type=bool, default=False)
-def ctd_upload(Id, filenames, production):
-    """ Edit entry at Caltech Data for data set to upload data given by filenames.
-    Id is an integer that defines the Caltech Data entry.
-    """
-
-    caltechdata.edit_ctd(Id, filenames=filenames, production=production)

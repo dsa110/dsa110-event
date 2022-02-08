@@ -4,14 +4,14 @@ import json
 import pytz
 from astropy import time
 from xml.dom import minidom
-from event import labels
+
 try:
     import voeventparse as vp
 except ImportError:
     print("voeventparse not available. cannot create voevents")
 
 
-def create_voevent(triggerfile=None, deployment=False, **kwargs):
+def create_voevent(jsonfile=None, deployment=False, **kwargs):
     """ template syntax for voeventparse creation of voevent
     """
 
@@ -20,14 +20,10 @@ def create_voevent(triggerfile=None, deployment=False, **kwargs):
 
     # set values
     dd = kwargs.copy()
-    if triggerfile is not None:
-        trigger = labels.readfile(triggerfile)
-
-        for k, v in trigger.items():  # should be one entry in T2 json trigger file
-            dd['internalname'] = k
-            for kk, vv in v.items():
-                if kk in required + preferred:
-                    dd[kk] = vv
+    if jsonfile is not None:   # as made by caltechdata.set_metadata
+        for k, v in trigger.items():
+            if k in required + preferred:
+                dd[k] = v
 
     assert all([k in dd for k in required]), f'Input keys {list(dd.keys())} not complete (requires {required})'
 
@@ -137,6 +133,9 @@ def create_voevent(triggerfile=None, deployment=False, **kwargs):
 
 
 def write_voevent(v, outname='new_voevent_example.xml'):
+    """ Takes VOEvent object and writes as xml. 
+    """
+
     with open(outname, 'w') as f:
         voxml = vp.dumps(v)
         xmlstr = minidom.parseString(voxml).toprettyxml(indent="   ")

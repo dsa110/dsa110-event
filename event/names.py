@@ -1,14 +1,15 @@
 import string
 import datetime
 from astropy import time
-from dsautils import dsa_store
-ds = dsa_store.DsaStore()
 
 
 def get_lastname():
     """ Look at etcd to get name of last triggered candidate
     Return of None means that the name generation should start anew.
     """
+
+    from dsautils import dsa_store
+    ds = dsa_store.DsaStore()
 
     try:
         lastname, vv = ds.get_dict('/mon/corr/1/trigger').popitem()
