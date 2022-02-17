@@ -34,6 +34,30 @@ def ctd_upload(idv, filenames, production):
 
 
 @cli.command()
+@click.argument('triggerfile')
+@click.argument('pngfile')
+@click.option('--notes')
+def archive_update(triggerfile, pngfile, notes)
+    """ Use triggerfile to create updated events.csv file for dsa110-archive.
+    Each triggerfile should also have an associated figure in png format.
+    Notes can be appended to identify the nature of the event. Suggestions:
+    - test
+    - pulsar
+    - frb
+    - repeat of <frb name>
+    """
+
+    dd = caltechdata.set_metadata(triggerfile=triggerfile)
+    dd['notes'] = notes
+    columns = ['internalname', 'mjds', 'dm', 'width', 'snr', 'ra', 'dec', 'radecerr', 'notes']
+
+    # use github python client to update dsa110-archive
+    # update events.csv
+    # add images/<pngfile>
+    # push to github
+
+
+@cli.command()
 @click.argument('inname')
 @click.argument('outname')
 @click.option('--production', type=bool, default=False)

@@ -49,7 +49,7 @@ def edit_ctd(idv, metadata={}, filenames=[], production=False):
     caltechdata_edit(ids=idv, token=token, metadata=metadata, files=filenames, production=production)
 
 
-def set_metadata(triggerfile=None, doi=None, schema='43'):
+def set_metadata(triggerfile=None, doi=None, schema='43', notes=None):
     """ Create dict with metadata for caltechdata/datacite.
     triggerfile overloads fields in template fields (format as found on h23).
     doi can be provided, but if not, one will be generated.
@@ -86,6 +86,9 @@ def set_metadata(triggerfile=None, doi=None, schema='43'):
     doi = get_doi(metadata, doi=doi)
             
     metadata['identifiers'] = [{'identifier': doi, 'identifierType': 'DOI'}]
+    if notes is not None:
+        description = {"description": notes, "descriptionType": "TechnicalInfo"}
+        metadata['descriptions'].append(description)
 
     return metadata
 
