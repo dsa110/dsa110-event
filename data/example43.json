@@ -50,12 +50,12 @@
     ],
     "descriptions": [
         {
-            "description": "Data associated with DSA-110 candidate transient.",
+            "description": "Data associated with DSA-110 candidate transient. Zipped file contains (1) a filterbank file with burst dynamic spectrum and (2) a FITS file with localization region. Second file is a png image showing summary views of data used to identify the candidate.",
             "descriptionType": "Abstract"
         }
     ],
     "formats": [
-        "zip"
+        "zip", "png"
     ],
     "fundingReferences": [
         {
@@ -89,8 +89,8 @@
     },
     "rightsList": [
         {
-            "rights": "CC By 2.0",
-		"rightsURI": "https://creativecommons.org/licenses/by/2.0/"
+            "rights": "CC By 4.0",
+		"rightsURI": "https://creativecommons.org/licenses/by/4.0/"
         }
     ],
     "subjects": [
