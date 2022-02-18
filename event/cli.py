@@ -1,5 +1,7 @@
+import os
 import json
 import click
+import csv
 from event import tns_api_bulk_report, caltechdata, voevent, labels
 
 @click.group('dsaevent')
@@ -37,7 +39,9 @@ def ctd_upload(idv, filenames, production):
 @click.argument('triggerfile')
 @click.argument('pngfile')
 @click.option('--notes')
-def archive_update(triggerfile, pngfile, notes)
+@click.option('--csvfile', default='events.csv')
+@click.option('--production', type=bool, default=False)
+def archive_update(triggerfile, pngfile, notes, csvfile, production):
     """ Use triggerfile to create updated events.csv file for dsa110-archive.
     Each triggerfile should also have an associated figure in png format.
     Notes can be appended to identify the nature of the event. Suggestions:
@@ -47,12 +51,27 @@ def archive_update(triggerfile, pngfile, notes)
     - repeat of <frb name>
     """
 
-    dd = caltechdata.set_metadata(triggerfile=triggerfile)
+    dd = caltechdata.set_metadata(triggerfile=triggerfile, production=production)
     dd['notes'] = notes
-    columns = ['internalname', 'mjds', 'dm', 'width', 'snr', 'ra', 'dec', 'radecerr', 'notes']
+    dd['pngfile'] = pngfile
+    dd['doi'] = dd['identifiers'][0]['identifier']
+    columns = ['internalname', 'mjds', 'dm', 'width', 'snr', 'ra', 'dec', 'radecerr', 'notes', 'doi', 'pngfile']
+    colheader = ['Internal Name', 'MJD', 'DM', 'Width', 'SNR', 'RA', 'Dec', 'RADecErr', 'Notes', 'Data Download', 'Summary figure']
+
+    # verify that columns are correct?
+
+    row = [dd[column] for column in columns]
+    if os.path.exists(csvfile):
+        code = 'a'
+    else:
+        code = 'w'
+    with open(csvfile, code) as fp:
+        csvwriter = csv.writer(fp)
+        if code == 'w':
+            csvwriter.writerow(colheader)  # no need if appending
+        csvwriter.writerow(row)
 
     # use github python client to update dsa110-archive
-    # update events.csv
     # add images/<pngfile>
     # push to github
 
@@ -66,7 +85,7 @@ def create_voevent(inname, outname, production):
     Required fields: fluence, p_flux, ra, dec, radecerr, dm, dmerr, width, snr, internalname, mjd, importance
     """
 
-    dd = caltechdata.set_metadata(triggerfile=inname)
+    dd = caltechdata.set_metadata(triggerfile=inname, production=production)
     ve = voevent.create_voevent(production=production, **dd)
     voevent.write_voevent(ve, outname=outname)
 
