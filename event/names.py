@@ -27,14 +27,14 @@ def increment_name(mjd, lastname=None, suffixlength=4):
     if lastname is None:  # generate new name for this yymmdd
         suffix = string.ascii_lowercase[0]*suffixlength
     else:
-        yymmdd = lastname[:-suffixlength]
+        yymmdd = lastname.split('_inj')[0][:-suffixlength]
         dt0 = datetime.datetime(int('20'+yymmdd[0:2]), int(yymmdd[2:4]), int(yymmdd[4:6]))
         if dt.year > dt0.year or dt.month > dt0.month or dt.day > dt0.day:
             # new day, so name starts over
             suffix = string.ascii_lowercase[0]*suffixlength
         else:
             # same day, so increment name
-            lastsuffix = lastname[-suffixlength:]
+            lastsuffix = lastname.split('_inj')[0][-suffixlength:]
             lastnumber = suffixtonumber(lastsuffix)
             suffix = f'{numbertosuffix(lastnumber+1):a>4}'  # increment name
 
