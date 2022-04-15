@@ -4,7 +4,7 @@ import numpy as np
 import subprocess
 import pipes
 
-_allowed = ['astrophysical', 'instrumental', 'unsure/noise', 'rfi', 'save', '']
+_allowed = ['astrophysical', 'injection', 'instrumental', 'unsure/noise', 'rfi', 'save', '']
 
 
 def exists_remote(host, path):
