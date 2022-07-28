@@ -78,7 +78,7 @@ class DSAEvent:
         if lock is not None:
             lock.release()
 
-                    
+
 def create_event(fn):
     """ Create a DSAEvent from a json file
     """
