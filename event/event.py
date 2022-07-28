@@ -1,9 +1,12 @@
-import os.path
+from pathlib import Path
 import json
-import dataclasses
+from dataclasses import dataclass, asdict
+from typing import Optional, Any
+
+OUTPUT_PATH = '/dataz/dsa110/operations/T3/'
 
 
-@dataclasses.dataclass
+@dataclass
 class DSAEvent:
     mjds: float
     snr: float
@@ -42,18 +45,46 @@ class DSAEvent:
     real: Optional[bool] = None
                                         
     def tojson(self):
-        jj = json.dumps(dataclasses.asdict(self))
+        """ Convert event dict to json string.
+        """
+
+        jj = json.dumps(asdict(self))
         return jj
 
-    def writejson(self):
-        fn = outpath + dd['trigname'] + '.json'
+    def update(self, dsaevent):
+        """ Update fields of this dsaevent with another dsaevent.
+        """
 
-        if not os.path.exists(fn):
-            with open(fn, 'w') as f:
-                json.dump(self.tojson(), f, ensure_ascii=False, indent=4)
+        return self.__dict__.update(dsaevent.__dict__)
+    
+    def writejson(self, outpath=OUTPUT_PATH, lock=None):
+        """ Writes event to JSON or updates JSON file that already exists.
+        """
+
+        fn = Path(outpath) / Path(f'{self.trigname}.json')
+
+        if lock is not None:
+            lock.acquire(timeout="5s")
+
+        if not Path(fn).exists():
+            with open(fn, 'w') as fp:
+                json.dump(asdict(self), fp, ensure_ascii=False, indent=4)
         else:
-            with open(fn, 'r') as f:
-                # implement T3Cand load
-                # implement T3Cand update
-                with open(fn, 'w') as f:
-                    json.dump(self.tojson(), f, ensure_ascii=False, indent=4)
+            dsaevent0 = create_event(fn)
+            self.update(dsaevent0)
+            with open(fn, 'w') as fp:
+                json.dump(asdict(self), fp, ensure_ascii=False, indent=4)
+
+        if lock is not None:
+            lock.release()
+
+                    
+def create_event(fn):
+    """ Create a DSAEvent from a json file
+    """
+
+    assert Path(fn).exists(), f"File {fn} not found"
+    with open(fn) as fp:
+        dsaevent = DSAEvent(**json.load(fp))
+
+    return dsaevent
