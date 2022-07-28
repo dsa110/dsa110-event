@@ -85,6 +85,15 @@ def create_event(fn):
 
     assert Path(fn).exists(), f"File {fn} not found"
     with open(fn) as fp:
-        dsaevent = DSAEvent(**json.load(fp))
+        dd = json.load(fp)
+
+    try:
+    dsaevent = DSAEvent(**dd)
+    except TypeError:
+        # obsolete format written by initial trigger
+        trigname = list(dd.keys())[0]  
+        dd2 = dd[trigname]
+        dd2['trigname'] = trigname
+        dsaevent = DSAEvent(**dd2)
 
     return dsaevent
