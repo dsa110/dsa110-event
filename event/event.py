@@ -88,7 +88,7 @@ def create_event(fn):
         dd = json.load(fp)
 
     try:
-    dsaevent = DSAEvent(**dd)
+        dsaevent = DSAEvent(**dd)
     except TypeError:
         # obsolete format written by initial trigger
         trigname = list(dd.keys())[0]  
