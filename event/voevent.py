@@ -8,7 +8,7 @@ from xml.dom import minidom
 try:
     import voeventparse as vp
 except ImportError:
-    print("voeventparse not available. cannot create voevents")
+    pass
 
 
 def create_voevent(jsonfile=None, deployment=False, **kwargs):
