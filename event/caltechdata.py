@@ -6,11 +6,12 @@ from event import labels
 try:
     from datacite import DataCiteRESTClient
 except ImportError:
-    print('datacite not found. cannot create DOIs')
+    pass
+
 try:
     from caltechdata_api import caltechdata_edit, caltechdata_write
 except ImportError:
-    print('caltechdata_api not found.')
+    pass
 
 try:
     dcp = environ['DATACITEPWD']
@@ -18,7 +19,6 @@ try:
 except KeyError:
     dcp = None
     token = None
-    print('datacite/tind env not found. Cannot use datacite API')
 
 _install_dir = path.abspath(path.dirname(__file__))
 
@@ -29,7 +29,9 @@ def send_ctd(triggerfile, doi=None, filenames=[], production=False, schema='43')
     filenames is (optional) list of strings with full path to file for upload.
     Upload takes time, so can be left blank and loaded alter via "edit_ctd" function.
     """
-
+    if token is None:
+        print('TINDTOK not set')
+    
     metadata = set_metadata(triggerfile=triggerfile, doi=doi, schema=schema, production=production)
 
     # write metadata
@@ -117,6 +119,8 @@ def get_doi(metadata, doi=None, production=False):
             print(f'DOI provided ({doi}) does not have required prefix ({prefix}). Adding prefix.')
             doi = prefix + '/' + doi
     else:
+        if dcp is None:
+            print("DATACITEPWD note set")
         d = DataCiteRESTClient(username='CALTECH.OVRO', password=dcp, prefix=prefix, test_mode=(not production))
         doi = d.public_doi(metadata, url)
 
