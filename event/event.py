@@ -35,6 +35,7 @@ class DSAEvent:
     corr07_header: Optional[Any] = None
     corr08_data: Optional[Any] = None
     corr08_header: Optional[Any] = None
+    corr19_data: Optional[Any] = None
     corr19_header: Optional[Any] = None
     corr21_data: Optional[Any] = None
     corr21_header: Optional[Any] = None
@@ -91,6 +92,8 @@ def create_event(fn):
         dsaevent = DSAEvent(**dd)
     except TypeError:
         # obsolete format written by initial trigger
+        print('Found old trigger json format')
+        assert len(dd), "dictionary read from json is empty"
         trigname = list(dd.keys())[0]  
         dd2 = dd[trigname]
         dd2['trigname'] = trigname
