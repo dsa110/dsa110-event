@@ -19,6 +19,7 @@ class DSAEvent:
     ra: float
     dec: float
     trigname: str
+    gulp: Optional[int] = None
     filfile: Optional[str] = None
     candplot: Optional[str] = None
     save: Optional[bool] = False
