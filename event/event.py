@@ -75,12 +75,16 @@ class DSAEvent:
         jj = json.dumps(asdict(self))
         return jj
 
-    def update(self, dsaevent):
-        """ Update fields of this dsaevent with another dsaevent.
+    def update(self, other):
+        """ Update fields of this dsaevent with another dsaevent or dict.
         """
+        if isinstance(other, DSAEvent):
+            return asdict(self).update(asdict(dsaevent))
+        elif isinstance(other, dict):
+            return asdict(self).update(other)
+        else:
+            print('type of other is not recognized (should be dict or DSAEvent')
 
-        return self.__dict__.update(dsaevent.__dict__)
-    
     def writejson(self, outpath=OUTPUT_PATH, lock=None):
         """ Writes event to JSON or updates JSON file that already exists.
         """
@@ -95,7 +99,7 @@ class DSAEvent:
                 json.dump(asdict(self), fp, ensure_ascii=False, indent=4)
         else:
             dsaevent0 = create_event(fn)
-            self.update(dsaevent0)
+            dsaevent0.update(self)
             with open(fn, 'w') as fp:
                 json.dump(asdict(self), fp, ensure_ascii=False, indent=4)
 
