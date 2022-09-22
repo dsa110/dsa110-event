@@ -79,9 +79,9 @@ class DSAEvent:
         """ Update fields of this dsaevent with another dsaevent or dict.
         """
         if isinstance(other, DSAEvent):
-            return asdict(self).update(asdict(dsaevent))
+            self.__dict__.update(asdict(other))
         elif isinstance(other, dict):
-            return asdict(self).update(other)
+            self.__dict__.update(other)
         else:
             print('type of other is not recognized (should be dict or DSAEvent')
 
