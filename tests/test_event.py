@@ -1,0 +1,30 @@
+import pytest
+import os.path
+from event import event
+from astropy import time
+
+
+def test_create():
+    print("testing t2trigger.json")
+    dd = event.create_event("data/t2trigger.json")
+    assert isinstance(dd, event.DSAEvent)
+
+    print("testing t2trigger0.json")
+    dd = event.create_event("data/t2trigger0.json")
+    assert isinstance(dd, event.DSAEvent)
+
+def test_tojson():
+    dd = event.create_event("data/t2trigger.json")
+    jj = dd.tojson()
+    assert isinstance(jj, str)
+    assert '{' in jj and '}' in jj
+
+def test_write():
+    dd = event.create_event("data/t2trigger.json")
+    dd.dm = 0.
+    dd.writejson(outpath=".")
+
+# requires client to use dask lock?
+#def test_writelock():
+#    dd = event.create_event("data/t2trigger.json")
+#    dd.writejson(outpath="./testout.json", lock=LOCK)

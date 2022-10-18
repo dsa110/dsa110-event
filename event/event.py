@@ -19,31 +19,77 @@ class DSAEvent:
     ra: float
     dec: float
     trigname: str
+    gulp: Optional[int] = None
+    filterbank: Optional[str] = None
     filfile: Optional[str] = None
+    filfile_cand: Optional[str] = None
+    filplot_cand: Optional[str] = None
     candplot: Optional[str] = None
     save: Optional[bool] = False
     label: Optional[str] = None
-    corr03_data: Optional[Any] = None
-    corr03_header: Optional[Any] = None
-    corr04_data: Optional[Any] = None
-    corr04_header: Optional[Any] = None
-    corr05_data: Optional[Any] = None
-    corr05_header: Optional[Any] = None
-    corr06_data: Optional[Any] = None
-    corr06_header: Optional[Any] = None
-    corr07_data: Optional[Any] = None
-    corr07_header: Optional[Any] = None
-    corr08_data: Optional[Any] = None
-    corr08_header: Optional[Any] = None
-    corr19_header: Optional[Any] = None
-    corr21_data: Optional[Any] = None
-    corr21_header: Optional[Any] = None
-    corr22_data: Optional[Any] = None
-    corr22_header: Optional[Any] = None
     injected: Optional[bool] = None
     probability: Optional[float] = None
     real: Optional[bool] = None
-                                        
+    T2_json: Optional[str] = None
+    T2_csv: Optional[str] = None
+    corr03_data: Optional[str] = None
+    corr03_header: Optional[str] = None
+    corr04_data: Optional[str] = None
+    corr04_header: Optional[str] = None
+    corr05_data: Optional[str] = None
+    corr05_header: Optional[str] = None
+    corr06_data: Optional[str] = None
+    corr06_header: Optional[str] = None
+    corr07_data: Optional[str] = None
+    corr07_header: Optional[str] = None
+    corr08_data: Optional[str] = None
+    corr08_header: Optional[str] = None
+    corr19_data: Optional[str] = None
+    corr19_header: Optional[str] = None
+    corr21_data: Optional[str] = None
+    corr21_header: Optional[str] = None
+    corr22_data: Optional[str] = None
+    corr22_header: Optional[str] = None
+    bf1_width_bins: Optional[int] = None
+    bf1_start_bins: Optional[int] = None
+    bf1_dm: Optional[float] = None
+    bf1_dm_stddev: Optional[float] = None
+    bf1_reduced_chisq: Optional[float] = None
+    bf1_pvalue: Optional[float] = None
+    voltage_sb00: Optional[str] = None
+    voltage_sb01: Optional[str] = None
+    voltage_sb02: Optional[str] = None
+    voltage_sb03: Optional[str] = None
+    voltage_sb04: Optional[str] = None
+    voltage_sb05: Optional[str] = None
+    voltage_sb06: Optional[str] = None
+    voltage_sb07: Optional[str] = None
+    voltage_sb08: Optional[str] = None
+    voltage_sb09: Optional[str] = None
+    voltage_sb10: Optional[str] = None
+    voltage_sb11: Optional[str] = None
+    voltage_sb12: Optional[str] = None
+    voltage_sb13: Optional[str] = None
+    voltage_sb14: Optional[str] = None
+    voltage_sb15: Optional[str] = None
+    beamformer_weights: Optional[str] = None
+    beamformer_weights_sb00: Optional[str] = None
+    beamformer_weights_sb01: Optional[str] = None
+    beamformer_weights_sb02: Optional[str] = None
+    beamformer_weights_sb03: Optional[str] = None
+    beamformer_weights_sb04: Optional[str] = None
+    beamformer_weights_sb05: Optional[str] = None
+    beamformer_weights_sb06: Optional[str] = None
+    beamformer_weights_sb07: Optional[str] = None
+    beamformer_weights_sb08: Optional[str] = None
+    beamformer_weights_sb09: Optional[str] = None
+    beamformer_weights_sb10: Optional[str] = None
+    beamformer_weights_sb11: Optional[str] = None
+    beamformer_weights_sb12: Optional[str] = None
+    beamformer_weights_sb13: Optional[str] = None
+    beamformer_weights_sb14: Optional[str] = None
+    beamformer_weights_sb15: Optional[str] = None
+    
     def tojson(self):
         """ Convert event dict to json string.
         """
@@ -51,12 +97,22 @@ class DSAEvent:
         jj = json.dumps(asdict(self))
         return jj
 
-    def update(self, dsaevent):
-        """ Update fields of this dsaevent with another dsaevent.
+    def update(self, other):
+        """ Update fields of this dsaevent with another dsaevent or dict.
         """
 
-        return self.__dict__.update(dsaevent.__dict__)
-    
+        if isinstance(other, DSAEvent):
+            other = asdict(other)
+
+        assert isinstance(other, dict), "update method takes DSACand or dict as argument"
+
+        for kk,vv in other.items():
+            if kk in self.__dict__:
+                if self.__dict__[kk] is None:
+                    self.__dict__[kk] = vv
+            else:
+                print(f"key {kk} not in DSACand")
+
     def writejson(self, outpath=OUTPUT_PATH, lock=None):
         """ Writes event to JSON or updates JSON file that already exists.
         """
@@ -71,7 +127,7 @@ class DSAEvent:
                 json.dump(asdict(self), fp, ensure_ascii=False, indent=4)
         else:
             dsaevent0 = create_event(fn)
-            self.update(dsaevent0)
+            dsaevent0.update(self)
             with open(fn, 'w') as fp:
                 json.dump(asdict(self), fp, ensure_ascii=False, indent=4)
 
@@ -88,9 +144,11 @@ def create_event(fn):
         dd = json.load(fp)
 
     try:
-    dsaevent = DSAEvent(**dd)
+        dsaevent = DSAEvent(**dd)
     except TypeError:
         # obsolete format written by initial trigger
+        print('Found old trigger json format')
+        assert len(dd), "dictionary read from json is empty"
         trigname = list(dd.keys())[0]  
         dd2 = dd[trigname]
         dd2['trigname'] = trigname
