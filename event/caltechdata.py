@@ -120,7 +120,7 @@ def get_doi(metadata, doi=None, production=False):
             doi = prefix + '/' + doi
     else:
         if dcp is None:
-            print("DATACITEPWD note set")
+            print("DATACITEPWD not set")
         d = DataCiteRESTClient(username='CALTECH.OVRO', password=dcp, prefix=prefix, test_mode=(not production))
         doi = d.public_doi(metadata, url)
 
