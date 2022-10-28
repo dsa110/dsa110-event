@@ -1,7 +1,8 @@
 import pytest
+from os import path
 from event import labels
 
-_install_dir = path.abspath(path.dirname(event.__file__))
+_install_dir = path.abspath(path.dirname(labels.__file__))
 
 
 def test_read():
