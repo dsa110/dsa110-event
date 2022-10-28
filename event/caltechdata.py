@@ -82,7 +82,7 @@ def set_metadata(triggerfile=None, schema='43', notes=None):
     """
 
     # template metadata
-    with open(path.join(_install_dir, f'../data/example{schema}.json'), 'r') as fp:
+    with open(path.join(_install_dir, f'data/example{schema}.json'), 'r') as fp:
         metadata = json.load(fp)
 
     required = ['internalname', 'mjds', 'dm', 'width', 'snr', 'ra', 'dec', 'radecerr']
