@@ -44,10 +44,10 @@ def create_ctd(triggerfile, files=[], getidv=True, getdoi=False, production=Fals
         idv = caltechdata_write(metadata, token, production=production, schema=schema, files=files, publish=False)
         metadata['alternateIdentifiers'].append({'alternateIdentifier': idv, 'alternateIdentifierType': 'Caltech Data id'})
         url = f'https://data.caltech.edu/records/{idv}'
-        print(f"Created unpublished Caltech Data entry at {url}")
+        print(f"Created unpublished Caltech Data entry at {url.replace('records', 'uploads')}")
         if getdoi:
             metadata = get_doi(metadata, url, production=production)
-            print(f"Created DOI to point to {url}")
+            print(f"Created DOI to point to published location at {url}")
         else:
             print("No DOI created")
     else:
