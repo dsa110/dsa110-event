@@ -8,7 +8,7 @@ setup(name='dsa110-event',
       packages=find_packages(),
       package_requirements=['caltechdata_api', 'requests', 'voevent-parse', 'datacite', 'astropy', 'distributed'],
       include_package_data=True,
-      data_files=[('event/data', glob.glob('data/*.*'))],
+      data_files=[('data', glob.glob('data/*.*'))],
       entry_points='''
         [console_scripts]
         dsaevent=event.cli:cli
