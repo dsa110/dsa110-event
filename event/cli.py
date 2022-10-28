@@ -12,51 +12,40 @@ def cli():
 @cli.command()
 @click.argument('triggerfile')
 @click.option('--production', type=bool, default=False)
-@click.option('--doi', type=str, default=None)
-def ctd_send(triggerfile, production, doi):
-    """ Create entry at Caltech Data for data set
-    An entry will be identified by an Id (integer).
-    Requires triggerfile (as on h23)
+@click.option('--getdoi', is_flag=True)
+@click.option('--files', type=list, default=[])
+def ctd_send(triggerfile, production, getdoi, files):
+    """ Use trigger json file (as on h23) to create entry at Caltech Data.
+    Can optionally provide list of files (full path) to upload with entry.
     """
 
-    idv = caltechdata.send_ctd(triggerfile=triggerfile, production=production, doi=doi)
-    print(f'Triggerfile {triggerfile} uploaded as idv {idv}.')
-
-
-@cli.command()
-@click.argument('idv')
-@click.argument('filenames')
-@click.option('--production', type=bool, default=False)
-def ctd_upload(idv, filenames, production):
-    """ Edit entry at Caltech Data for data set to upload data given by filenames.
-    idv is an integer that defines the Caltech Data entry.
-    """
-
-    caltechdata.edit_ctd(idv, filenames=filenames, production=production)
+    metadata = caltechdata.create_ctd(triggerfile=triggerfile, production=production, getdoi=getdoi)
+    print(f'{triggerfile} uploaded at Caltech Data')
+    caltechdata.edit_ctd(metadata=metadata, filenames=filenames, production=production, files=files)
+    doi = metadata['identifiers'][0]['identifier']
+    print(f'{triggerfile} data published with doi {doi}')
 
 
 @cli.command()
 @click.argument('triggerfile')
-@click.argument('pngfile')
+@click.argument('doi')
 @click.option('--notes')
 @click.option('--csvfile', default='events.csv')
-@click.option('--production', type=bool, default=False)
-def archive_update(triggerfile, pngfile, notes, csvfile, production):
+def archive_update(triggerfile, doi, notes, csvfile):
     """ Use triggerfile to create updated events.csv file for dsa110-archive.
-    Each triggerfile should also have an associated figure in png format.
+    Each triggerfile should also have an associated doi.
     Notes can be appended to identify the nature of the event. Suggestions:
     - test
     - pulsar
     - frb
-    - repeat of <frb name>
+    - <known name>
     """
 
-    dd = caltechdata.set_metadata(triggerfile=triggerfile, production=production)
+    dd = caltechdata.set_metadata(triggerfile=triggerfile)
     dd['notes'] = notes
-    dd['pngfile'] = pngfile
-    dd['doi'] = dd['identifiers'][0]['identifier']
-    columns = ['internalname', 'mjds', 'dm', 'width', 'snr', 'ra', 'dec', 'radecerr', 'notes', 'doi', 'pngfile']
-    colheader = ['Internal Name', 'MJD', 'DM', 'Width', 'SNR', 'RA', 'Dec', 'RADecErr', 'Notes', 'Data Download', 'Summary figure']
+    dd['doi'] = doi
+    columns = ['internalname', 'mjds', 'dm', 'width', 'snr', 'ra', 'dec', 'radecerr', 'notes', 'doi']
+    colheader = ['Internal Name', 'MJD', 'DM', 'Width', 'SNR', 'RA', 'Dec', 'RADecErr', 'Notes', 'doi']
 
     # verify that columns are correct?
 
@@ -71,9 +60,8 @@ def archive_update(triggerfile, pngfile, notes, csvfile, production):
             csvwriter.writerow(colheader)  # no need if appending
         csvwriter.writerow(row)
 
-    # use github python client to update dsa110-archive
-    # add images/<pngfile>
-    # push to github
+    # then use github python client to update dsa110-archive
+    # and push to github
 
 
 @cli.command()
