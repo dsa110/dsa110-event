@@ -45,7 +45,7 @@ def archive_update(triggerfile, doi, notes, csvfile):
     dd['notes'] = notes
     dd['doi'] = doi
     columns = ['internalname', 'mjds', 'dm', 'width', 'snr', 'ra', 'dec', 'radecerr', 'notes', 'doi']
-    colheader = ['Internal Name', 'MJD', 'DM', 'Width', 'SNR', 'RA', 'Dec', 'RADecErr', 'Notes', 'doi']
+    colheader = ['Internal Name', 'MJD', 'DM', 'Width', 'SNR', 'RA', 'Dec', 'RADecErr', 'Notes', 'DOI']
 
     # verify that columns are correct?
 

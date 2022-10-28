@@ -96,7 +96,8 @@ def set_metadata(triggerfile=None, schema='43', notes=None):
                 metadata[k] = v
         metadata['internalname'] = trigger['trigname']
         metadata['width'] = 0.262144*trigger['ibox']   # TODO: use cnf?
-        metadata['radecerr'] = 1   # TODO: set to synthesized beam size
+        if 'radecerr' not in metadata:
+            metadata['radecerr'] = 2
 
     # modify basic metadata
     if 'internalname' in metadata:
