@@ -82,7 +82,7 @@ def set_metadata(triggerfile=None, schema='43', notes=None):
     """
 
     # template metadata
-    with open(path.join(_install_dir, f'data/example{schema}.json'), 'r') as fp:
+    with open(f'{_install_dir}/data/example{schema}.json', 'r') as fp:
         metadata = json.load(fp)
 
     required = ['internalname', 'mjds', 'dm', 'width', 'snr', 'ra', 'dec', 'radecerr']
@@ -90,7 +90,7 @@ def set_metadata(triggerfile=None, schema='43', notes=None):
 
     # set values
     if triggerfile is not None:   # typical format as found on h23
-        trigger = labels.readfile(triggerfile)
+        trigger = labels.readfile(filename=triggerfile)
         for k, v in trigger.items():
             if k in required + preferred:
                 metadata[k] = v
