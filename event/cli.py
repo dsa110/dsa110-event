@@ -11,29 +11,76 @@ def cli():
 
 @cli.command()
 @click.argument('triggerfile')
-@click.option('--production', type=bool, default=False)
+@click.option('--production', is_flag=True)
 @click.option('--getdoi', is_flag=True)
 @click.option('--files', type=list, default=[])
-def ctd_send(triggerfile, production, getdoi, files):
+@click.option('--version', type=str, default=0.1)
+def ctd_send(triggerfile, production, getdoi, files, version):
     """ Use trigger json file (as on h23) to create entry at Caltech Data.
     Can optionally provide list of files (full path) to upload with entry.
+    versions:
+    - use version 0.x to refer to nonstandard, ad hoc release (e.g., not a complete package)
+    - use version 1.0 to refer to standard data package with "final" processing (e.g., in January)
+    - use version 1.x to refer to minor updates that don't affect science
+    - use version x.0 to refer to major fixes with (for x>1)
     """
 
-    metadata = caltechdata.create_ctd(triggerfile=triggerfile, production=production, getdoi=getdoi)
-    print(f'{triggerfile} uploaded at Caltech Data')
-    caltechdata.edit_ctd(metadata=metadata, filenames=filenames, production=production, files=files)
+    metadata = caltechdata.create_ctd(triggerfile=triggerfile, production=production, getdoi=getdoi, version=version)
+    print(f'Created metadata from {triggerfile}')
+
+    # TODO: add version to metadata
     doi = metadata['identifiers'][0]['identifier']
-    print(f'{triggerfile} data published with doi {doi}')
+    caltechdata.edit_ctd(metadata, files=files, production=production)  # publishes by default
+
+    metadata_json = f'metadata_{triggerfile}'
+    print(f'data published with doi {doi}. Saving {metadata_json}')
+
+    with open(metadata_json, 'w') as fp:
+        json.dump(metadata, fp)
 
 
 @cli.command()
-@click.argument('triggerfile')
-@click.argument('doi')
+@click.argument('metadata_json')
+@click.option('--production', is_flag=True)
+@click.option('--files', type=list, default=[])
+@click.option('--description', type=str, default=None)
+@click.option('--version', type=str, default=None)
+def ctd_update(metadata_json, production, files, description, version):
+    """ Use metadata json file (from ctd_create) to update entry at Caltech Data.
+    Can update description, files, version.
+    versions:
+    - use version 0.x to refer to nonstandard, ad hoc release (e.g., not a complete package)
+    - use version 1.0 to refer to standard data package with "final" processing (e.g., in January)
+    - use version 1.x to refer to minor updates that don't affect science
+    - use version x.0 to refer to major fixes with (for x>1)
+    """
+
+    with open(metadata_json, 'r') as fp:
+        metadata = json.load(fp)
+    print(f'Read metadata from {metadata_json}')
+
+    if description is not None:
+        metadata['descriptions'][0]['description'] = description
+    if version is not None:
+        metadata['version'] = version
+
+    # TODO: add version to metadata
+    caltechdata.edit_ctd(metadata, production=production, files=files, publish=True)
+
+    doi = metadata['identifiers'][0]['identifier']
+    print(f'edited published entry with doi {doi}. Saving {metadata_json}')
+
+    with open(metadata_json, 'w') as fp:
+        json.dump(metadata, fp)
+
+
+@cli.command()
+@click.argument('metadata_json')
 @click.option('--notes')
 @click.option('--csvfile', default='events.csv')
-def archive_update(triggerfile, doi, notes, csvfile):
-    """ Use triggerfile to create updated events.csv file for dsa110-archive.
-    Each triggerfile should also have an associated doi.
+def archive_update(metadata_json, notes, csvfile):
+    """ Use metadata_json saved by ctd_send to add line to  events.csv file for dsa110-archive.
+    metadata file should have doi and version.
     Notes can be appended to identify the nature of the event. Suggestions:
     - test
     - pulsar
@@ -41,11 +88,13 @@ def archive_update(triggerfile, doi, notes, csvfile):
     - <known name>
     """
 
-    dd = caltechdata.set_metadata(triggerfile=triggerfile)
+    with open(metadata_json, 'r') as fp:
+        dd = json.load(fp)
+
     dd['notes'] = notes
-    dd['doi'] = doi
-    columns = ['internalname', 'mjds', 'dm', 'width', 'snr', 'ra', 'dec', 'radecerr', 'notes', 'doi']
-    colheader = ['Internal Name', 'MJD', 'DM', 'Width', 'SNR', 'RA', 'Dec', 'RADecErr', 'Notes', 'DOI']
+    dd['doi'] = dd['identifiers'][0]['identifier']
+    columns = ['internalname', 'mjds', 'dm', 'width', 'snr', 'ra', 'dec', 'radecerr', 'notes', 'version', 'doi']
+    colheader = ['Internal Name', 'MJD', 'DM', 'Width', 'SNR', 'RA', 'Dec', 'RADecErr', 'Notes', 'Version', 'doi']
 
     # verify that columns are correct?
 

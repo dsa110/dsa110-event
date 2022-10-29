@@ -23,7 +23,7 @@ except KeyError:
 _install_dir = path.abspath(path.dirname(__file__))
 
 
-def create_ctd(triggerfile, files=[], getidv=True, getdoi=False, production=False, schema='43'):
+def create_ctd(triggerfile, files=[], getidv=True, getdoi=False, production=False, schema='43', version=None):
     """ Create entry at Caltech Data, but do not publish.
     triggerfile is json format for metadata (as typical on h23).
     files is (optional) list of strings with full path to file for upload.
@@ -37,6 +37,8 @@ def create_ctd(triggerfile, files=[], getidv=True, getdoi=False, production=Fals
         print('RDMTOK not set')
     
     metadata = set_metadata(triggerfile=triggerfile, schema=schema)
+    if version is not None:
+        metadata['version'] = version
 
     # write metadata
     if getidv:
@@ -56,12 +58,15 @@ def create_ctd(triggerfile, files=[], getidv=True, getdoi=False, production=Fals
     return metadata
 
 
-def edit_ctd(idv=None, metadata=None, files=[], production=False):
+def edit_ctd(metadata, idv=None, files=[], production=False, version=None, publish=True):
     """ Edit an entry at Caltech Data.
     Can provide metadata with url field to get caltech data idv or provide idv and metadata explicitly.
     metadata should be that returned by create_ctd. idv should be in metadata as an identifier.
     files is list of strings with full path to file for upload.
     """
+
+    if version is not None:
+        metadata['version'] = version
 
     if idv is None:
         for altid in metadata['alternateIdentifiers']:
@@ -72,7 +77,7 @@ def edit_ctd(idv=None, metadata=None, files=[], production=False):
     assert idv is not None
     
     # upload supporting data
-    caltechdata_edit(ids=idv, token=token, metadata=metadata, files=files, production=production, publish=True)
+    caltechdata_edit(ids=idv, token=token, metadata=metadata, files=files, production=production, publish=publish)
 
 
 def set_metadata(triggerfile=None, schema='43', notes=None):
@@ -101,7 +106,7 @@ def set_metadata(triggerfile=None, schema='43', notes=None):
 
     # modify basic metadata
     if 'internalname' in metadata:
-        metadata['alternateIdentifiers'] = [{'alternateIdentifier': metadata['internalname'], 'alternateIdentifierType': 'DSA-100 internal id'}]
+        metadata['alternateIdentifiers'] = [{'alternateIdentifier': metadata['internalname'], 'alternateIdentifierType': 'DSA-110 internal id'}]
     dt = datetime.datetime.now()
     metadata['publicationYear'] = f'{dt.year:04}'
     metadata['dates'] = [{'date': f'{dt.year:04}-{dt.month:02}-{dt.day:02}', 'dateType': 'Created'}]  # dateType can also be "Updated"
