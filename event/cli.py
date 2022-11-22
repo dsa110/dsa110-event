@@ -122,8 +122,8 @@ def create_voevent(inname, outname, production):
     Required fields: fluence, p_flux, ra, dec, radecerr, dm, dmerr, width, snr, internalname, mjd, importance
     """
 
-    dd = caltechdata.set_metadata(triggerfile=inname, production=production)
-    ve = voevent.create_voevent(production=production, **dd)
+    dd = caltechdata.set_metadata(triggerfile=inname)
+    ve = voevent.create_voevent(**dd)
     voevent.write_voevent(ve, outname=outname)
 
 
@@ -140,9 +140,12 @@ def send_voevent(inname, destination):
 @cli.command()
 @click.argument('report_filename')
 @click.option('--production', type=bool, default=False)
-def tns_send(report_filename, production):
+def tns_create(report_filename, production):
     """ Send event to TNS to be named.
     report_filename is JSON format file with TNS metadata.
     """
+
+    dd = caltechdata.set_metadata(triggerfile=inname)
+    ve = voevent.create_voevent(**dd)
 
     result = tns_api_bulk_report.send_report(report_filename, production)
