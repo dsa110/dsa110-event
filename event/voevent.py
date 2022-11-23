@@ -41,7 +41,7 @@ tns_dict = {
       "host_name": "",
       "host_redshift": "",
       "repeater_of_objid": "",
-      "public_webpage": "",
+      "public_webpage": "http://deepsynoptic.org",
       "region_ellipse": "",
       "region_ellipse_unitid": "27",
       "region_polygon": "",
@@ -262,6 +262,10 @@ def set_tns_dict(ve, phot_dict={}, event_dict={}):
     if groupid is None:
         print("Must set TNSGROUPID")
         return
+
+    # TODO: optional "end_prop_period"
+    # TODO: ra/dec errors separately, flux/flux_error
+    # TODO: galactic_max_dm, galactic_max_dm_model
     
     tns_dict['frb_report']['0']["internal_name"] = str(ve.Why.Name)
     tns_dict['frb_report']['0']["reporter"] = "Casey J. Law"
