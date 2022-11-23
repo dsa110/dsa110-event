@@ -138,14 +138,23 @@ def send_voevent(inname, destination):
 
 
 @cli.command()
-@click.argument('report_filename')
+@click.argument('inname')
+@click.option('--send', type=bool, default=True)
 @click.option('--production', type=bool, default=False)
-def tns_create(report_filename, production):
-    """ Send event to TNS to be named.
+def tns_create(inname, send, production):
+    """ Create 
     report_filename is JSON format file with TNS metadata.
     """
 
     dd = caltechdata.set_metadata(triggerfile=inname)
     ve = voevent.create_voevent(**dd)
+    dd2 = voevent.set_tns_dict(ve)  # this could also take phot_dict and event_dict to customize values
 
-    result = tns_api_bulk_report.send_report(report_filename, production)
+    # tmp file to send
+    fn = f'tns_report_{ve.Why.Name}.json'
+    if os.path.exists(fn):
+        print(f"Removing older version of {fn}")
+        os.remove(fn)
+    voevent.write_tns(dd2, fn)
+    if send:
+        result = tns_api_bulk_report.send_report(fn, production)

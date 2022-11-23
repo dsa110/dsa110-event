@@ -10,6 +10,10 @@ try:
 except ImportError:
     pass
 
+try:
+    groupid = os.environ['TNSGROUPID']
+except KeyError:
+    groupid = None
 
 tns_dict = {
   "frb_report": {
@@ -247,15 +251,18 @@ def get_voevent(inname):
     return ve
 
 
-def set_tns_dict(ve, groupid, phot_dict={}, event_dict={}):
+def set_tns_dict(ve, phot_dict={}, event_dict={}):
     """ assign values to TNS dictionary. Most values taken from parsed VOEvent file.
-    - groupid is associated with bot registred with TNS (used for "reporting_groupid" and "groupid").
 
     Optional dictionary input to overload some fields:
     - phot_dict is dictionary for "photometry" keys to set: "snr", "flux", "flux_error", "fluence", "burst_width", "sampling_time".
     - event_dict is dictionary for other TNS keys (from frb_report set): "internal_name", "reporter", "remarks", "host_name", "repeater_of_objid".
     """
 
+    if groupid is None:
+        print("Must set TNSGROUPID")
+        return
+    
     tns_dict['frb_report']['0']["internal_name"] = str(ve.Why.Name)
     tns_dict['frb_report']['0']["reporter"] = "Casey J. Law"
     pos = vp.get_event_position(ve)
