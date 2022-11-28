@@ -27,8 +27,8 @@ TNSproduction="www.wis-tns.org"
 TNSsandbox="sandbox.wis-tns.org"
 
 try:
-    YOUR_BOT_ID=environ['TNSGROUPID']
-    YOUR_BOT_NAME=environ['TNSNAME']
+    YOUR_BOT_ID=environ['TNSBOTID']
+    YOUR_BOT_NAME=environ['TNSBOTNAME']
     api_key=environ['TNSKEY']
 except KeyError:
     YOUR_BOT_ID=None
