@@ -139,8 +139,8 @@ def send_voevent(inname, destination):
 
 @cli.command()
 @click.argument('inname')
-@click.option('--send', type=bool, default=True)
-@click.option('--production', type=bool, default=False)
+@click.option('--send', type=bool, is_flag=True)
+@click.option('--production', type=bool, is_flag=True)
 def tns_create(inname, send, production):
     """ Create 
     report_filename is JSON format file with TNS metadata.

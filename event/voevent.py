@@ -10,11 +10,6 @@ try:
 except ImportError:
     pass
 
-try:
-    groupid = os.environ['TNSGROUPID']
-except KeyError:
-    groupid = None
-
 tns_dict = {
   "frb_report": {
     "0": {
@@ -259,10 +254,6 @@ def set_tns_dict(ve, phot_dict={}, event_dict={}):
     - event_dict is dictionary for other TNS keys (from frb_report set): "internal_name", "reporter", "remarks", "host_name", "repeater_of_objid".
     """
 
-    if groupid is None:
-        print("Must set TNSGROUPID")
-        return
-
     # TODO: optional "end_prop_period"
     # TODO: ra/dec errors separately, flux/flux_error
     # TODO: galactic_max_dm, galactic_max_dm_model
@@ -277,9 +268,9 @@ def set_tns_dict(ve, phot_dict={}, event_dict={}):
     dt = vp.get_event_time_as_utc(ve)
     dtstring = f'{dt.date().isoformat()} {dt.time().isoformat()}'
     tns_dict['frb_report']['0']["discovery_datetime"] = dtstring
-    tns_dict['frb_report']['0']["reporting_groupid"] = groupid
-    tns_dict['frb_report']['0']["groupid"] = groupid
-    tns_dict['frb_report']['0']["at_type"] = "5"  # FRBs
+    tns_dict['frb_report']['0']["reporting_groupid"] = 132  # DSA-110
+    tns_dict['frb_report']['0']["groupid"] = 132  # DSA-110
+    tns_dict['frb_report']['0']["at_type"] = 5  # FRBs
 
     params = vp.get_grouped_params(ve)
     tns_dict['frb_report']['0']["dm"] = params['event parameters']['dm']['value']
