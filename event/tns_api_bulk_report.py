@@ -209,7 +209,7 @@ def check_response(response):
                 print (list(http_errors.values())
                        [list(http_errors.keys()).index(status_code)])
             else:
-                print ("Undocumented error.")
+                print (f"Undocumented error: {status_code}.")
             return False
     else:
         # response doesn't exists, print error

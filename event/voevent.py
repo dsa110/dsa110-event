@@ -36,7 +36,7 @@ tns_dict = {
       "host_name": "",
       "host_redshift": "",
       "repeater_of_objid": "",
-      "public_webpage": "http://deepsynoptic.org",
+      "public_webpage": "http://code.deepsynoptic.org/dsa110-archive",
       "region_ellipse": "",
       "region_ellipse_unitid": "27",
       "region_polygon": "",
@@ -120,8 +120,7 @@ def create_voevent(jsonfile=None, deployment=False, **kwargs):
 
     assert all([k in dd for k in required]), f'Input keys {list(dd.keys())} not complete (requires {required})'
 
-    # TODO: set this correctly
-    dt = time.Time(dd['mjds'], format='mjd').to_datetime(timezone=pytz.utc)
+    dt = time.Time(dd['mjds'], format='mjd').to_datetime(timezone=pytz.utc)  # topocentric, top of band
 
     # create voevent instance
     role = vp.definitions.roles.observation if deployment else vp.definitions.roles.test
@@ -250,8 +249,8 @@ def set_tns_dict(ve, phot_dict={}, event_dict={}):
     """ assign values to TNS dictionary. Most values taken from parsed VOEvent file.
 
     Optional dictionary input to overload some fields:
-    - phot_dict is dictionary for "photometry" keys to set: "snr", "flux", "flux_error", "fluence", "burst_width", "sampling_time".
-    - event_dict is dictionary for other TNS keys (from frb_report set): "internal_name", "reporter", "remarks", "host_name", "repeater_of_objid".
+    - phot_dict is dictionary for "photometry" keys to set: "snr", "flux", "flux_error", "fluence", "burst_width"
+    - event_dict is dictionary for other TNS keys (from frb_report set): "internal_name", "remarks", "repeater_of_objid"
     """
 
     # TODO: optional "end_prop_period"
@@ -288,9 +287,9 @@ def set_tns_dict(ve, phot_dict={}, event_dict={}):
     tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["obsdate"] = dtstring
     tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["flux_units"] = "Jy"
     tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["ref_freq"] = "1405"
-    tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["inst_bandwidth"] = "250"
-    tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["channels_no"] = 1024
-    tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["sampling_time"] = 1
+    tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["inst_bandwidth"] = "187.5"
+    tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["channels_no"] = 768
+    tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["sampling_time"] = 0.262
 
     # set photometry values
     for key, value in phot_dict.items():

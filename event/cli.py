@@ -11,8 +11,8 @@ def cli():
 
 @cli.command()
 @click.argument('triggerfile')
-@click.option('--production', is_flag=True)
-@click.option('--getdoi', is_flag=True)
+@click.option('--production', is_flag=True, default=False, show_default=True)
+@click.option('--getdoi', is_flag=True, default=False, show_default=True)
 @click.option('--files', type=list, default=[])
 @click.option('--version', type=str, default=0.1)
 def ctd_send(triggerfile, production, getdoi, files, version):
@@ -41,7 +41,7 @@ def ctd_send(triggerfile, production, getdoi, files, version):
 
 @cli.command()
 @click.argument('metadata_json')
-@click.option('--production', is_flag=True)
+@click.option('--production', is_flag=True, default=False, show_default=True)
 @click.option('--files', type=list, default=[])
 @click.option('--description', type=str, default=None)
 @click.option('--version', type=str, default=None)
@@ -139,16 +139,25 @@ def send_voevent(inname, destination):
 
 @cli.command()
 @click.argument('inname')
-@click.option('--send', type=bool, is_flag=True)
-@click.option('--production', type=bool, is_flag=True)
-def tns_create(inname, send, production):
-    """ Create 
-    report_filename is JSON format file with TNS metadata.
+@click.option('--send', type=bool, default=False, is_flag=True, show_default=True)
+@click.option('--production', type=bool, default=False, is_flag=True, show_default=True)
+@click.option('--repeater_of_objid', type=str, default=None)
+@click.option('--remarks', type=str, default=None)
+def tns_create(inname, send, production, repeater_of_objid, remarks):
+    """ Create report_filename in JSON format file with TNS metadata.
+    send and production are boolean flags to do something with tns json file.
+    Common optional fields are repeater_of_objid and remarks.
     """
+
+    event_dict, phot_dict = {}, {}
+    if repeater_of_objid is not None:
+        event_dict['repeater_of_objid'] = repeater_of_objid
+    if remarks is not None:
+        event_dict['remarks'] = remarks
 
     dd = caltechdata.set_metadata(triggerfile=inname)
     ve = voevent.create_voevent(**dd)
-    dd2 = voevent.set_tns_dict(ve)  # this could also take phot_dict and event_dict to customize values
+    dd2 = voevent.set_tns_dict(ve, phot_dict=phot_dict, event_dict=event_dict)
 
     # tmp file to send
     fn = f'tns_report_{ve.Why.Name}.json'
@@ -158,3 +167,19 @@ def tns_create(inname, send, production):
     voevent.write_tns(dd2, fn)
     if send:
         result = tns_api_bulk_report.send_report(fn, production)
+
+
+@cli.command()
+@click.argument('inname')
+@click.option('--production', type=bool, default=False, is_flag=True, show_default=True)
+def tns_send(inname, production):
+    """ Send inname, which is assumed to be a TNS json file.
+    production is a boolean flags.
+    """
+
+    # tmp file to send
+    if not os.path.exists(inname):
+        print(f"file {inname} not found")
+
+    if send:
+        result = tns_api_bulk_report.send_report(inname, production)
