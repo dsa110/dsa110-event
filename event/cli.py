@@ -13,7 +13,7 @@ def cli():
 @click.argument('triggerfile')
 @click.option('--production', is_flag=True, default=False, show_default=True)
 @click.option('--getdoi', is_flag=True, default=False, show_default=True)
-@click.option('--files', type=list, default=[])
+@click.option('--files', type=str, default=None)
 @click.option('--version', type=str, default=0.1)
 def ctd_send(triggerfile, production, getdoi, files, version):
     """ Use trigger json file (as on h23) to create entry at Caltech Data.
@@ -26,7 +26,11 @@ def ctd_send(triggerfile, production, getdoi, files, version):
     """
 
     metadata = caltechdata.create_ctd(triggerfile=triggerfile, production=production, getdoi=getdoi, version=version)
-    doi = metadata['identifiers'][0]['identifier']
+    for Iddict in metadata['identifiers']:
+        if Iddict['identifierType'] == 'DOI':
+            doi = Iddict['identifier']
+            print(f'Got doi {doi} from metadata')
+
     print(f'Created metadata from {triggerfile} with doi {doi}')
 
     metadata_json = f'metadata_{triggerfile}'
@@ -41,7 +45,7 @@ def ctd_send(triggerfile, production, getdoi, files, version):
 @cli.command()
 @click.argument('metadata_json')
 @click.option('--production', is_flag=True, default=False, show_default=True)
-@click.option('--files', type=list, default=[])
+@click.option('--files', type=str, default=None)
 @click.option('--description', type=str, default=None)
 @click.option('--version', type=str, default=None)
 def ctd_update(metadata_json, production, files, description, version):
@@ -66,7 +70,10 @@ def ctd_update(metadata_json, production, files, description, version):
     # TODO: add version to metadata
     caltechdata.edit_ctd(metadata, production=production, files=files, publish=True)
 
-    doi = metadata['identifiers'][0]['identifier']
+    for Iddict in metadata['identifiers']:
+        if Iddict['identifierType'] == 'DOI':
+            doi = Iddict['identifier']
+            print(f'Got doi {doi} from metadata')
     print(f'edited published entry with doi {doi}. Saving {metadata_json}')
 
     with open(metadata_json, 'w') as fp:
@@ -91,7 +98,13 @@ def archive_update(metadata_json, notes, csvfile):
         dd = json.load(fp)
 
     dd['notes'] = notes
-    dd['doi'] = dd['identifiers'][0]['identifier']
+
+    for Iddict in dd['identifiers']:
+        if Iddict['identifierType'] == 'DOI':
+            doi = Iddict['identifier']
+            dd['doi'] = doi
+            print(f'Got doi {doi} from metadata')
+    
     columns = ['internalname', 'mjds', 'dm', 'width', 'snr', 'ra', 'dec', 'radecerr', 'notes', 'version', 'doi']
     colheader = ['Internal Name', 'MJD', 'DM', 'Width', 'SNR', 'RA', 'Dec', 'RADecErr', 'Notes', 'Version', 'doi']
 

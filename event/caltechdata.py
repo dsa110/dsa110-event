@@ -15,15 +15,13 @@ except ImportError:
 
 try:
     dcp = environ['DATACITEPWD']
-    token = environ['RDMTOK']
 except KeyError:
     dcp = None
-    token = None
 
 _install_dir = path.abspath(path.dirname(__file__))
 
 
-def create_ctd(triggerfile, files=[], getidv=True, getdoi=False, production=False, schema='43', version=None):
+def create_ctd(triggerfile, files=None, getidv=True, getdoi=False, production=False, schema='43', version=None):
     """ Create entry at Caltech Data, but do not publish.
     triggerfile is json format for metadata (as typical on h23).
     files is (optional) list of strings with full path to file for upload.
@@ -33,9 +31,14 @@ def create_ctd(triggerfile, files=[], getidv=True, getdoi=False, production=Fals
     Returns metadata with triggerfile info and (optionally) a new doi.
     """
 
-    if token is None:
-        print('RDMTOK not set')
-    
+    if production:
+        token = environ['RDMTOK']
+    else:
+        token = environ['RDMTESTTOK']
+
+    if files is not None:
+        files = files.split(',')
+
     metadata = set_metadata(triggerfile=triggerfile, schema=schema)
     if version is not None:
         metadata['version'] = version
@@ -44,7 +47,7 @@ def create_ctd(triggerfile, files=[], getidv=True, getdoi=False, production=Fals
     if getidv:
         # create, but do not publish
         idv = caltechdata_write(metadata, token, production=production, schema=schema, files=files, publish=False)
-        metadata['Identifiers'].append({'identifier': idv, 'identifierType': 'Caltech Data ID'})
+        metadata['identifiers'].append({'identifier': idv, 'identifierType': 'cdid'})
         url = f'https://data.caltech.edu/records/{idv}'
         print(f"Created unpublished Caltech Data entry at {url.replace('records', 'uploads')}")
         if getdoi:
@@ -58,29 +61,40 @@ def create_ctd(triggerfile, files=[], getidv=True, getdoi=False, production=Fals
     return metadata
 
 
-def edit_ctd(metadata, idv=None, files=[], production=False, version=None, publish=True):
+def edit_ctd(metadata, idv=None, files=None, production=False, version=None, description=None, publish=True):
     """ Edit an entry at Caltech Data.
     Can provide metadata with url field to get caltech data idv or provide idv and metadata explicitly.
     metadata should be that returned by create_ctd. idv should be in metadata as an identifier.
     files is list of strings with full path to file for upload.
     """
 
+    if production:
+        token = environ['RDMTOK']
+    else:
+        token = environ['RDMTESTTOK']
+
+    if files is not None:
+        files = files.split(',')
+
     if version is not None:
         metadata['version'] = version
+        
+    if description is not None:
+        metadata['descriptions'] = [{"description": description, "descriptionType": "Abstract"}]
 
     if idv is None:
-        for Iddict in metadata['Identifiers']:
-            if Iddict['identifierType'] == 'Caltech Data ID':
+        for Iddict in metadata['identifiers']:
+            if Iddict['identifierType'] == 'cdid':
                 idv = Iddict['identifier']
                 print(f'Got idv {idv} from metadata')
 
     assert idv is not None
     
     # upload supporting data
-    caltechdata_edit(ids=idv, token=token, metadata=metadata, files=files, production=production, publish=publish)
+    caltechdata_edit(idv=idv, token=token, metadata=metadata, files=files, production=production, publish=publish)
 
 
-def set_metadata(triggerfile=None, schema='43', notes=None):
+def set_metadata(triggerfile=None, schema='43', description=None):
     """ Create dict with metadata for caltechdata/datacite.
     triggerfile overloads fields in template fields (format as found on h23).
     schema can be '43' or '42' and defines template json file.
@@ -107,15 +121,14 @@ def set_metadata(triggerfile=None, schema='43', notes=None):
 
     # modify basic metadata
     if 'internalname' in metadata:
-        metadata['Identifiers'] = [{'identifier': metadata['internalname'], 'identifierType': 'DSA-110 ID'}]
+        metadata['identifiers'].append({'identifier': metadata['internalname'], 'identifierType': 'dsa-110-id'})
     dt = datetime.datetime.now()
     metadata['publicationYear'] = f'{dt.year:04}'
     metadata['dates'] = [{'date': f'{dt.year:04}-{dt.month:02}-{dt.day:02}', 'dateType': 'Created'}]  # dateType can also be "Updated"
     metadata['titles'] = [{'title': f'DSA-110 Data for Candidate Fast Radio Burst {metadata["internalname"]}'}]
 
-    if notes is not None:
-        description = {"description": notes, "descriptionType": "TechnicalInfo"}
-        metadata['descriptions'].append(description)
+    if description is not None:
+        metadata['descriptions'] = [{"description": description, "descriptionType": "Abstract"}]
 
     return metadata
 
@@ -142,7 +155,7 @@ def get_doi(metadata, url, production=False):
         print("DATACITEPWD not set")
     d = DataCiteRESTClient(username='CALTECH.OVRO', password=dcp, prefix=prefix, test_mode=(not production))
     doi = d.public_doi(metadata, url)
-    metadata['identifiers'] = [{'identifier': doi, 'identifierType': 'DOI'}]
+    metadata['identifiers'].append({'identifier': doi, 'identifierType': 'DOI'})
 
     return metadata
 

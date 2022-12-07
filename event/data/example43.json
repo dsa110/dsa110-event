@@ -1,20 +1,8 @@
 {
   "identifiers": [
+  ],
+  "creators": [
       {
-	  "identifier": "setDOI",
-	  "identifierType": "DOI"
-      },
-      {
-	  "identifier": "",
-	  "identifierType": "DSA-110 ID"
-      },
-      {
-	  "identifier": "",
-	  "identifierType": "Caltech Data ID"
-      }
-    ],
-    "creators": [
-        {
           "nameType": "Personal",
           "affiliation": [
               {
@@ -52,12 +40,12 @@
     ],
     "descriptions": [
         {
-            "description": "Data associated with DSA-110 candidate transient. Zipped file contains (1) a filterbank file with burst dynamic spectrum and (2) a FITS file with localization region. Second file is a png image showing summary views of data used to identify the candidate.",
+            "description": "Data associated with DSA-110 candidate transient.",
             "descriptionType": "Abstract"
         }
     ],
     "formats": [
-        "zip", "png"
+        "png"
     ],
     "fundingReferences": [
         {
