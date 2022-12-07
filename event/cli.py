@@ -26,17 +26,16 @@ def ctd_send(triggerfile, production, getdoi, files, version):
     """
 
     metadata = caltechdata.create_ctd(triggerfile=triggerfile, production=production, getdoi=getdoi, version=version)
-    print(f'Created metadata from {triggerfile}')
-
-    # TODO: add version to metadata
     doi = metadata['identifiers'][0]['identifier']
-    caltechdata.edit_ctd(metadata, files=files, production=production)  # publishes by default
+    print(f'Created metadata from {triggerfile} with doi {doi}')
 
     metadata_json = f'metadata_{triggerfile}'
-    print(f'data published with doi {doi}. Saving {metadata_json}')
-
+    print(f'Saving {metadata_json}')
     with open(metadata_json, 'w') as fp:
         json.dump(metadata, fp)
+
+    caltechdata.edit_ctd(metadata, files=files, production=production)  # publishes by default
+
 
 
 @cli.command()
@@ -156,6 +155,8 @@ def tns_create(inname, send, production, repeater_of_objid, remarks):
         event_dict['remarks'] = remarks
 
     dd = caltechdata.set_metadata(triggerfile=inname)
+# TODO: test doing direct to TNS json instead of using voevent
+#    dd2 = caltechdata.set_tns_dict(dd, phot_dict=phot_dict, event_dict=event_dict)
     ve = voevent.create_voevent(**dd)
     dd2 = voevent.set_tns_dict(ve, phot_dict=phot_dict, event_dict=event_dict)
 

@@ -3,13 +3,15 @@
       {
 	  "identifier": "setDOI",
 	  "identifierType": "DOI"
+      },
+      {
+	  "identifier": "",
+	  "identifierType": "DSA-110 ID"
+      },
+      {
+	  "identifier": "",
+	  "identifierType": "Caltech Data ID"
       }
-  ],
-    "alternateIdentifiers": [
-        {
-            "alternateIdentifier": "Alt_Identifier",
-            "alternateIdentifierType": "Alt_Identifier_Type"
-        }
     ],
     "creators": [
         {
@@ -88,7 +90,7 @@
     },
     "rightsList": [
         {
-            "rights": "CC By 4.0",
+            "rights": "cc-by-4.0",
 		"rightsURI": "https://creativecommons.org/licenses/by/4.0/"
         }
     ],

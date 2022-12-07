@@ -44,7 +44,7 @@ def create_ctd(triggerfile, files=[], getidv=True, getdoi=False, production=Fals
     if getidv:
         # create, but do not publish
         idv = caltechdata_write(metadata, token, production=production, schema=schema, files=files, publish=False)
-        metadata['alternateIdentifiers'].append({'alternateIdentifier': idv, 'alternateIdentifierType': 'Caltech Data id'})
+        metadata['Identifiers'].append({'identifier': idv, 'identifierType': 'Caltech Data ID'})
         url = f'https://data.caltech.edu/records/{idv}'
         print(f"Created unpublished Caltech Data entry at {url.replace('records', 'uploads')}")
         if getdoi:
@@ -69,9 +69,9 @@ def edit_ctd(metadata, idv=None, files=[], production=False, version=None, publi
         metadata['version'] = version
 
     if idv is None:
-        for altid in metadata['alternateIdentifiers']:
-            if altid['alternateIdentifierType'] == 'Caltech Data id':
-                idv = altid['alternateIdentifier']
+        for Iddict in metadata['Identifiers']:
+            if Iddict['identifierType'] == 'Caltech Data ID':
+                idv = Iddict['identifier']
                 print(f'Got idv {idv} from metadata')
 
     assert idv is not None
@@ -101,12 +101,13 @@ def set_metadata(triggerfile=None, schema='43', notes=None):
                 metadata[k] = v
         metadata['internalname'] = trigger['trigname']
         metadata['width'] = 0.262144*trigger['ibox']   # TODO: use cnf?
-        if 'radecerr' not in metadata:
-            metadata['radecerr'] = 2
+        metadata['radecerr'] = 3.4*3600  # very conservative
+        metadata['raerr'] = 30  # only correct at dec=0 for real-time beam
+        metadata['decerr'] = 3.4*3600  # only correct at dec=0 for real-time beam
 
     # modify basic metadata
     if 'internalname' in metadata:
-        metadata['alternateIdentifiers'] = [{'alternateIdentifier': metadata['internalname'], 'alternateIdentifierType': 'DSA-110 internal id'}]
+        metadata['Identifiers'] = [{'identifier': metadata['internalname'], 'identifierType': 'DSA-110 ID'}]
     dt = datetime.datetime.now()
     metadata['publicationYear'] = f'{dt.year:04}'
     metadata['dates'] = [{'date': f'{dt.year:04}-{dt.month:02}-{dt.day:02}', 'dateType': 'Created'}]  # dateType can also be "Updated"
@@ -144,3 +145,62 @@ def get_doi(metadata, url, production=False):
     metadata['identifiers'] = [{'identifier': doi, 'identifierType': 'DOI'}]
 
     return metadata
+
+
+def set_tns_dict(dd, phot_dict={}, event_dict={}):
+    """ Use metadata to assign values to TNS dictionary.
+
+    Optional dictionary input to overload some fields:
+    - phot_dict is dictionary for "photometry" keys to set: "snr", "flux", "flux_error", "fluence", "burst_width"
+    - event_dict is dictionary for other TNS keys (from frb_report set): "remarks", "repeater_of_objid"
+    """
+
+    # TODO: optional "end_prop_period"
+    # TODO: flux/flux_error
+    # TODO: galactic_max_dm, galactic_max_dm_model
+    
+    tns_dict['frb_report']['0']["internal_name"] = metadata['internalname']
+    tns_dict['frb_report']['0']["reporter"] = "Casey J. Law"
+
+    tns_dict['frb_report']['0']['ra']['value'] = metadata['ra']
+    tns_dict['frb_report']['0']['dec']['value'] = metadata['dec']
+    tns_dict['frb_report']['0']['ra']['error'] = metadata['raerr']
+    tns_dict['frb_report']['0']['dec']['error'] = metadata['decerr']
+    tns_dict['frb_report']['0']["discovery_datetime"] = time.Time(metadata['mjds'], format="mjd").iso
+    tns_dict['frb_report']['0']["reporting_groupid"] = 132  # DSA-110
+    tns_dict['frb_report']['0']["groupid"] = 132  # DSA-110
+    tns_dict['frb_report']['0']["at_type"] = 5  # FRBs
+
+    tns_dict['frb_report']['0']["dm"] = metadata['dm']
+    try:
+        tns_dict['frb_report']['0']["dmerr"] = metadata['dmerr']
+    except KeyError:
+        pass
+    tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["snr"] = metadata['snr']
+    tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["burst_width"] = metadata['width']
+    tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["filter_value"] = 129
+    tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["instrument_value"] = 239
+    tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["flux"] = 0   # TODO: set this
+    tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["flux_error"] = 0   # TODO: set this
+    tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["limiting_flux"] = 0
+    tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["obsdate"] = dtstring
+    tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["flux_units"] = "Jy"
+    tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["ref_freq"] = "1405"
+    tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["inst_bandwidth"] = "187.5"
+    tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["channels_no"] = 768
+    tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["sampling_time"] = 0.262
+
+    # set photometry values
+    for key, value in phot_dict.items():
+        if key in tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]:
+            print(f'Overloading event key {key} with {value}')
+            tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"][key] = value
+            
+    # overload other values
+    for key, value in event_dict.items():
+        if key in tns_dict['frb_report']['0']:
+            print(f'Overloading event key {key} with {value}')
+            tns_dict['frb_report']['0'][key] = value
+            
+    return tns_dict
+
