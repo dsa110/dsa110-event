@@ -186,7 +186,8 @@ def tns_create(inname, send, production, repeater_of_objid, remarks):
 @cli.command()
 @click.argument('inname')
 @click.option('--production', type=bool, default=False, is_flag=True, show_default=True)
-def tns_send(inname, production):
+@click.option('--send', type=bool, default=False, is_flag=True, show_default=True)
+def tns_send(inname, production, send):
     """ Send inname, which is assumed to be a TNS json file.
     production is a boolean flags.
     """
