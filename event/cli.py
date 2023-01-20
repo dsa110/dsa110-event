@@ -11,52 +11,102 @@ def cli():
 
 @cli.command()
 @click.argument('triggerfile')
-@click.option('--production', type=bool, default=False)
-@click.option('--doi', type=str, default=None)
-def ctd_send(triggerfile, production, doi):
-    """ Create entry at Caltech Data for data set
-    An entry will be identified by an Id (integer).
-    Requires triggerfile (as on h23)
+@click.option('--production', is_flag=True, default=False, show_default=True)
+@click.option('--getdoi', is_flag=True, default=False, show_default=True)
+@click.option('--files', type=str, default=None)
+@click.option('--version', type=str, default=0.1)
+def ctd_send(triggerfile, production, getdoi, files, version):
+    """ Use trigger json file (as on h23) to create entry at Caltech Data.
+    Can optionally provide list of files (full path) to upload with entry.
+    versions:
+    - use version 0.x to refer to nonstandard, ad hoc release (e.g., not a complete package)
+    - use version 1.0 to refer to standard data package with "final" processing (e.g., in January)
+    - use version 1.x to refer to minor updates that don't affect science
+    - use version x.0 to refer to major fixes with (for x>1)
     """
 
-    idv = caltechdata.send_ctd(triggerfile=triggerfile, production=production, doi=doi)
-    print(f'Triggerfile {triggerfile} uploaded as idv {idv}.')
+    metadata = caltechdata.create_ctd(triggerfile=triggerfile, production=production, getdoi=getdoi, version=version)
+    for Iddict in metadata['identifiers']:
+        if Iddict['identifierType'] == 'DOI':
+            doi = Iddict['identifier']
+            print(f'Got doi {doi} from metadata')
+
+    print(f'Created metadata from {triggerfile} with doi {doi}')
+
+    metadata_json = f'metadata_{triggerfile}'
+    print(f'Saving {metadata_json}')
+    with open(metadata_json, 'w') as fp:
+        json.dump(metadata, fp)
+
+    caltechdata.edit_ctd(metadata, files=files, production=production)  # publishes by default
+
 
 
 @cli.command()
-@click.argument('idv')
-@click.argument('filenames')
-@click.option('--production', type=bool, default=False)
-def ctd_upload(idv, filenames, production):
-    """ Edit entry at Caltech Data for data set to upload data given by filenames.
-    idv is an integer that defines the Caltech Data entry.
+@click.argument('metadata_json')
+@click.option('--production', is_flag=True, default=False, show_default=True)
+@click.option('--files', type=str, default=None)
+@click.option('--description', type=str, default=None)
+@click.option('--version', type=str, default=None)
+def ctd_update(metadata_json, production, files, description, version):
+    """ Use metadata json file (from ctd_create) to update entry at Caltech Data.
+    Can update description, files, version.
+    versions:
+    - use version 0.x to refer to nonstandard, ad hoc release (e.g., not a complete package)
+    - use version 1.0 to refer to standard data package with "final" processing (e.g., in January)
+    - use version 1.x to refer to minor updates that don't affect science
+    - use version x.0 to refer to major fixes with (for x>1)
     """
 
-    caltechdata.edit_ctd(idv, filenames=filenames, production=production)
+    with open(metadata_json, 'r') as fp:
+        metadata = json.load(fp)
+    print(f'Read metadata from {metadata_json}')
+
+    if description is not None:
+        metadata['descriptions'][0]['description'] = description
+    if version is not None:
+        metadata['version'] = version
+
+    # TODO: add version to metadata
+    caltechdata.edit_ctd(metadata, production=production, files=files, publish=True)
+
+    for Iddict in metadata['identifiers']:
+        if Iddict['identifierType'] == 'DOI':
+            doi = Iddict['identifier']
+            print(f'Got doi {doi} from metadata')
+    print(f'edited published entry with doi {doi}. Saving {metadata_json}')
+
+    with open(metadata_json, 'w') as fp:
+        json.dump(metadata, fp)
 
 
 @cli.command()
-@click.argument('triggerfile')
-@click.argument('pngfile')
+@click.argument('metadata_json')
 @click.option('--notes')
 @click.option('--csvfile', default='events.csv')
-@click.option('--production', type=bool, default=False)
-def archive_update(triggerfile, pngfile, notes, csvfile, production):
-    """ Use triggerfile to create updated events.csv file for dsa110-archive.
-    Each triggerfile should also have an associated figure in png format.
+def archive_update(metadata_json, notes, csvfile):
+    """ Use metadata_json saved by ctd_send to add line to  events.csv file for dsa110-archive.
+    metadata file should have doi and version.
     Notes can be appended to identify the nature of the event. Suggestions:
     - test
     - pulsar
     - frb
-    - repeat of <frb name>
+    - <known name>
     """
 
-    dd = caltechdata.set_metadata(triggerfile=triggerfile, production=production)
+    with open(metadata_json, 'r') as fp:
+        dd = json.load(fp)
+
     dd['notes'] = notes
-    dd['pngfile'] = pngfile
-    dd['doi'] = dd['identifiers'][0]['identifier']
-    columns = ['internalname', 'mjds', 'dm', 'width', 'snr', 'ra', 'dec', 'radecerr', 'notes', 'doi', 'pngfile']
-    colheader = ['Internal Name', 'MJD', 'DM', 'Width', 'SNR', 'RA', 'Dec', 'RADecErr', 'Notes', 'Data Download', 'Summary figure']
+
+    for Iddict in dd['identifiers']:
+        if Iddict['identifierType'] == 'DOI':
+            doi = Iddict['identifier']
+            dd['doi'] = doi
+            print(f'Got doi {doi} from metadata')
+    
+    columns = ['internalname', 'mjds', 'dm', 'width', 'snr', 'ra', 'dec', 'radecerr', 'notes', 'version', 'doi']
+    colheader = ['Internal Name', 'MJD', 'DM', 'Width', 'SNR', 'RA', 'Dec', 'RADecErr', 'Notes', 'Version', 'doi']
 
     # verify that columns are correct?
 
@@ -71,9 +121,8 @@ def archive_update(triggerfile, pngfile, notes, csvfile, production):
             csvwriter.writerow(colheader)  # no need if appending
         csvwriter.writerow(row)
 
-    # use github python client to update dsa110-archive
-    # add images/<pngfile>
-    # push to github
+    # then use github python client to update dsa110-archive
+    # and push to github
 
 
 @cli.command()
@@ -81,12 +130,12 @@ def archive_update(triggerfile, pngfile, notes, csvfile, production):
 @click.argument('outname')
 @click.option('--production', type=bool, default=False)
 def create_voevent(inname, outname, production):
-    """ takes json file with key-value pairs for create_voevent function.
+    """ Takes T2 json (triggerfile) with key-value pairs for create_voevent function.
     Required fields: fluence, p_flux, ra, dec, radecerr, dm, dmerr, width, snr, internalname, mjd, importance
     """
 
-    dd = caltechdata.set_metadata(triggerfile=inname, production=production)
-    ve = voevent.create_voevent(production=production, **dd)
+    dd = caltechdata.set_metadata(triggerfile=inname)
+    ve = voevent.create_voevent(**dd)
     voevent.write_voevent(ve, outname=outname)
 
 
@@ -101,11 +150,51 @@ def send_voevent(inname, destination):
 
 
 @cli.command()
-@click.argument('report_filename')
-@click.option('--production', type=bool, default=False)
-def tns_send(report_filename, production):
-    """ Send event to TNS to be named.
-    report_filename is JSON format file with TNS metadata.
+@click.argument('inname')
+@click.option('--send', type=bool, default=False, is_flag=True, show_default=True)
+@click.option('--production', type=bool, default=False, is_flag=True, show_default=True)
+@click.option('--repeater_of_objid', type=str, default=None)
+@click.option('--remarks', type=str, default=None)
+def tns_create(inname, send, production, repeater_of_objid, remarks):
+    """ Takes T2 triggerfile to create report_filename in JSON format file with TNS metadata.
+    Arguments send and production are boolean flags to do something with tns json file.
+    Common optional fields are repeater_of_objid and remarks.
     """
 
-    result = tns_api_bulk_report.send_report(report_filename, production)
+    event_dict, phot_dict = {}, {}
+    if repeater_of_objid is not None:
+        event_dict['repeater_of_objid'] = repeater_of_objid
+    if remarks is not None:
+        event_dict['remarks'] = remarks
+
+    dd = caltechdata.set_metadata(triggerfile=inname)
+# TODO: test doing direct to TNS json instead of using voevent
+#    dd2 = caltechdata.set_tns_dict(dd, phot_dict=phot_dict, event_dict=event_dict)
+    ve = voevent.create_voevent(**dd)
+    dd2 = voevent.set_tns_dict(ve, phot_dict=phot_dict, event_dict=event_dict)
+
+    # tmp file to send
+    fn = f'tns_report_{ve.Why.Name}.json'
+    if os.path.exists(fn):
+        print(f"Removing older version of {fn}")
+        os.remove(fn)
+    voevent.write_tns(dd2, fn)
+    if send:
+        result = tns_api_bulk_report.send_report(fn, production)
+
+
+@cli.command()
+@click.argument('inname')
+@click.option('--production', type=bool, default=False, is_flag=True, show_default=True)
+@click.option('--send', type=bool, default=False, is_flag=True, show_default=True)
+def tns_send(inname, production, send):
+    """ Take TNS json file (created by tns_create) and send it to TNS.
+    production is a boolean flags.
+    """
+
+    # tmp file to send
+    if not os.path.exists(inname):
+        print(f"file {inname} not found")
+
+    if send:
+        result = tns_api_bulk_report.send_report(inname, production)

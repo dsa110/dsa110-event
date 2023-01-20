@@ -27,8 +27,8 @@ TNSproduction="www.wis-tns.org"
 TNSsandbox="sandbox.wis-tns.org"
 
 try:
-    YOUR_BOT_ID=environ['TNSGROUPID']
-    YOUR_BOT_NAME=environ['TNSNAME']
+    YOUR_BOT_ID=environ['TNSBOTID']
+    YOUR_BOT_NAME=environ['TNSBOTNAME']
     api_key=environ['TNSKEY']
 except KeyError:
     YOUR_BOT_ID=None
@@ -209,7 +209,7 @@ def check_response(response):
                 print (list(http_errors.values())
                        [list(http_errors.keys()).index(status_code)])
             else:
-                print ("Undocumented error.")
+                print (f"Undocumented error: {status_code}.")
             return False
     else:
         # response doesn't exists, print error
