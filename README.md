@@ -31,8 +31,8 @@ Start with T3 json with rough, real-time calibration and localization:
 - `create_voevent` -- creates standard VOEvent file.
 - `send_voevent` (in development) -- sends VOEvent to a broker or partner.
 - optionally:
--- Use T2 data as input to publication of event (`ctd_send`, `tns_create`, and `archive_update`, as below).
--- Important to save Caltech Data metadata file, in case updates are required. Keep it in the candidates data area.
+  - Use T2 data as input to publication of event (`ctd_send`, `tns_create`, and `archive_update`, as below).
+  - Important to save Caltech Data metadata file, in case updates are required. Keep it in the candidates data area.
 
 ## Arcsecond localization distribution for publication of complete analysis
 
