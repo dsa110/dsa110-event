@@ -130,7 +130,7 @@ def archive_update(metadata_json, notes, csvfile):
 @click.argument('outname')
 @click.option('--production', type=bool, default=False)
 def create_voevent(inname, outname, production):
-    """ takes json file with key-value pairs for create_voevent function.
+    """ Takes T2 json (triggerfile) with key-value pairs for create_voevent function.
     Required fields: fluence, p_flux, ra, dec, radecerr, dm, dmerr, width, snr, internalname, mjd, importance
     """
 
@@ -156,8 +156,8 @@ def send_voevent(inname, destination):
 @click.option('--repeater_of_objid', type=str, default=None)
 @click.option('--remarks', type=str, default=None)
 def tns_create(inname, send, production, repeater_of_objid, remarks):
-    """ Create report_filename in JSON format file with TNS metadata.
-    send and production are boolean flags to do something with tns json file.
+    """ Takes T2 triggerfile to create report_filename in JSON format file with TNS metadata.
+    Arguments send and production are boolean flags to do something with tns json file.
     Common optional fields are repeater_of_objid and remarks.
     """
 
@@ -188,7 +188,7 @@ def tns_create(inname, send, production, repeater_of_objid, remarks):
 @click.option('--production', type=bool, default=False, is_flag=True, show_default=True)
 @click.option('--send', type=bool, default=False, is_flag=True, show_default=True)
 def tns_send(inname, production, send):
-    """ Send inname, which is assumed to be a TNS json file.
+    """ Take TNS json file (created by tns_create) and send it to TNS.
     production is a boolean flags.
     """
 

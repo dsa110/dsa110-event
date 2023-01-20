@@ -30,7 +30,7 @@ tns_dict = {
       "reporter": "",
       "discovery_datetime": "",
       "barycentric_event_time": "",
-      "end_prop_period": "",
+      "end_prop_period_date": "",
       "proprietary_period_groups": "",
       "transient_redshift": "",
       "host_name": "",
@@ -253,7 +253,7 @@ def set_tns_dict(ve, phot_dict={}, event_dict={}):
     - event_dict is dictionary for other TNS keys (from frb_report set): "internal_name", "remarks", "repeater_of_objid"
     """
 
-    # TODO: optional "end_prop_period"
+    # TODO: optional "end_prop_period_date"
     # TODO: ra/dec errors separately, flux/flux_error
     # TODO: galactic_max_dm, galactic_max_dm_model
     
@@ -269,6 +269,7 @@ def set_tns_dict(ve, phot_dict={}, event_dict={}):
     tns_dict['frb_report']['0']["discovery_datetime"] = dtstring
     tns_dict['frb_report']['0']["reporting_groupid"] = 132  # DSA-110
     tns_dict['frb_report']['0']["groupid"] = 132  # DSA-110
+    tns_dict['frb_report']['0']['proprietary_period_groups'] = 132  # DSA-110
     tns_dict['frb_report']['0']["at_type"] = 5  # FRBs
 
     params = vp.get_grouped_params(ve)
