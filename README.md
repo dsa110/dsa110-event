@@ -19,23 +19,26 @@ python setup.py install
 
 # Use Cases
 
-## ASAP distribution of detection
+## ASAP distribution of detection for triggering by all-sky monitors (e.g., OVRO-LWA)
 
-Using T2 json with initial (search beam) localization:
+Start with T2 json with initial (search beam) localization:
 - `create_voevent` -- creates standard VOEvent file.
 - `send_voevent` (in development) -- sends VOEvent to a broker or partner.
 
-## Sub-arcminute localization distribution
+## Sub-arcminute localization distribution for triggering of repoint by telescope (e.g., Swift/GUANO)
 
-Using T3 json with rough, real-time calibration and localization:
+Start with T3 json with rough, real-time calibration and localization:
 - `create_voevent` -- creates standard VOEvent file.
 - `send_voevent` (in development) -- sends VOEvent to a broker or partner.
+- optionally:
+-- Use T2 data as input to publication of event (`ctd_send`, `tns_create`, and `archive_update`, as below).
+-- Important to save Caltech Data metadata file, in case updates are required. Keep it in the candidates data area.
 
-## Arcsecond localization publication
+## Arcsecond localization distribution for publication of complete analysis
 
-Using T3 json with full calibration and localization:
+Start with T3 json with full calibration and localization:
 - `ctd_send` -- get DOI and upload discovery plot. Creates metadata needed for updates and making archive update.
 - `tns_create` -- use T3 json to get official name and broadcast to public (with prop period, if needed).
 - `archive_update` -- adds line to DSA-110 event archive with link to data DOI, nickname, and official name.
 
-Save Caltech Data metadata file as standard data product, in case updates are required.
+Or if sub-arcmin localization already published, then modify the Caltech Data metadata and pass to `ctd_update` and `archive_update`.
