@@ -1,7 +1,7 @@
 import json
 from os import environ, path
 import datetime
-from event import labels
+from event import event
 from dataclasses import asdict
 
 try:
