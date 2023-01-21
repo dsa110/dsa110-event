@@ -19,6 +19,10 @@ class DSAEvent:
     ra: float
     dec: float
     trigname: str
+    raerr: Optional[float] = None
+    decerr: Optional[float] = None
+    radecerr: Optional[float] = None
+    dmerr: Optional[float] = None
     gulp: Optional[int] = None
     filterbank: Optional[str] = None
     filfile: Optional[str] = None

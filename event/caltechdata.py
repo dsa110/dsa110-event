@@ -2,6 +2,7 @@ import json
 from os import environ, path
 import datetime
 from event import labels
+from dataclasses import asdict
 
 try:
     from datacite import DataCiteRESTClient
@@ -105,19 +106,28 @@ def set_metadata(triggerfile=None, schema='43', description=None):
         metadata = json.load(fp)
 
     required = ['internalname', 'mjds', 'dm', 'width', 'snr', 'ra', 'dec', 'radecerr']
-    preferred = ['fluence', 'p_flux', 'importance', 'dmerr']
+    preferred = ['fluence', 'p_flux', 'importance', 'dmerr', 'raerr', 'decerr']
 
     # set values
     if triggerfile is not None:   # typical format as found on h23
-        trigger = labels.readfile(filename=triggerfile)
+#        trigger = labels.readfile(filename=triggerfile)
+        dc = event.create_event(fn=triggerfile)
+        trigger = asdict(dc)
+        # default values (assuming T2/search beam detection)
+        metadata['width'] = 0.262144*trigger['ibox']   # TODO: use cnf?
+        metadata['raerr'] = 30  # only correct at dec=0 for real-time beam
+        metadata['decerr'] = 3.4*3600  # only correct at dec=0 for real-time beam
+
+        # overload with values from file
         for k, v in trigger.items():
             if k in required + preferred:
                 metadata[k] = v
+        if "bf1_dm" in trigger:
+            metadata['dm'] = trigger["bf1_dm"]
+
+        # overload with special values
         metadata['internalname'] = trigger['trigname']
-        metadata['width'] = 0.262144*trigger['ibox']   # TODO: use cnf?
-        metadata['radecerr'] = 3.4*3600  # very conservative
-        metadata['raerr'] = 30  # only correct at dec=0 for real-time beam
-        metadata['decerr'] = 3.4*3600  # only correct at dec=0 for real-time beam
+        metadata['radecerr'] = max(metadata['raerr'], metadata['decerr'])
 
     # modify basic metadata
     if 'internalname' in metadata:

@@ -131,7 +131,8 @@ def archive_update(metadata_json, notes, csvfile):
 @click.option('--production', type=bool, default=False)
 def create_voevent(inname, outname, production):
     """ Takes T2 json (triggerfile) with key-value pairs for create_voevent function.
-    Required fields: fluence, p_flux, ra, dec, radecerr, dm, dmerr, width, snr, internalname, mjd, importance
+    Required fields: ra, dec, radecerr, dm, width, snr, internalname, mjd
+    Optional fields: dmerr, fluence, p_flux, importance.
     """
 
     dd = caltechdata.set_metadata(triggerfile=inname)
