@@ -123,7 +123,8 @@ def set_metadata(triggerfile=None, schema='43', description=None):
             if k in required + preferred:
                 metadata[k] = v
         if "bf1_dm" in trigger:
-            metadata['dm'] = trigger["bf1_dm"]
+            if trigger["bf1_dm"] is not None:
+                metadata['dm'] = trigger["bf1_dm"]
 
         # overload with special values
         metadata['internalname'] = trigger['trigname']
