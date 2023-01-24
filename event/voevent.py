@@ -30,7 +30,9 @@ tns_dict = {
       "reporter": "",
       "discovery_datetime": "",
       "barycentric_event_time": "",
-      "end_prop_period_date": "",
+      "proprietary_period": {"proprietary_period_value": "0",
+                             "proprietary_period_units": "days"
+      },
       "proprietary_period_groups": "",
       "transient_redshift": "",
       "host_name": "",

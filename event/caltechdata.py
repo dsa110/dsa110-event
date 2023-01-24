@@ -194,6 +194,9 @@ def set_tns_dict(dd, phot_dict={}, event_dict={}):
     tns_dict['frb_report']['0']["reporting_groupid"] = 132  # DSA-110
     tns_dict['frb_report']['0']["groupid"] = 132  # DSA-110
     tns_dict['frb_report']['0']['proprietary_period_groups'] = 132  # DSA-110
+    tns_dict['frb_report']['0']["proprietary_period"] = {"proprietary_period_value": "0",
+                                                         "proprietary_period_units": "days"}
+
     tns_dict['frb_report']['0']["at_type"] = 5  # FRBs
 
     tns_dict['frb_report']['0']["dm"] = metadata['dm']
