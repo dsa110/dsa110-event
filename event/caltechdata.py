@@ -196,6 +196,8 @@ def set_tns_dict(dd, phot_dict={}, event_dict={}):
     tns_dict['frb_report']['0']['proprietary_period_groups'] = 132  # DSA-110
     tns_dict['frb_report']['0']["proprietary_period"] = {"proprietary_period_value": "0",
                                                          "proprietary_period_units": "days"}
+    if "end_prop_period_date" in event_dict:
+        tns_dict['frb_report']['0']["end_prop_period_date"] = event_dict["end_prop_period_date"]
 
     tns_dict['frb_report']['0']["at_type"] = 5  # FRBs
 

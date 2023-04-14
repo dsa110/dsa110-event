@@ -30,10 +30,6 @@ tns_dict = {
       "reporter": "",
       "discovery_datetime": "",
       "barycentric_event_time": "",
-      "proprietary_period": {"proprietary_period_value": "0",
-                             "proprietary_period_units": "days"
-      },
-      "proprietary_period_groups": "",
       "transient_redshift": "",
       "host_name": "",
       "host_redshift": "",
@@ -255,7 +251,6 @@ def set_tns_dict(ve, phot_dict={}, event_dict={}):
     - event_dict is dictionary for other TNS keys (from frb_report set): "internal_name", "remarks", "repeater_of_objid"
     """
 
-    # TODO: optional "end_prop_period"
     # TODO: ra/dec errors separately, flux/flux_error
     # TODO: galactic_max_dm, galactic_max_dm_model
     
