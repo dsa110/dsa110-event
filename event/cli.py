@@ -156,10 +156,12 @@ def send_voevent(inname, destination):
 @click.option('--production', type=bool, default=False, is_flag=True, show_default=True)
 @click.option('--repeater_of_objid', type=str, default=None)
 @click.option('--remarks', type=str, default=None)
-def tns_create(inname, send, production, repeater_of_objid, remarks):
+@click.option('--propdate', type=str, default=None)
+def tns_create(inname, send, production, repeater_of_objid, remarks, propdate):
     """ Takes T2 triggerfile to create report_filename in JSON format file with TNS metadata.
     Arguments send and production are boolean flags to do something with tns json file.
-    Common optional fields are repeater_of_objid and remarks.
+    Common optional fields are repeater_of_objid and remarks and propdate.
+    propdate sets the "end_prop_period_date" field. Date format is "2023-01-31 00:00:00.0"
     """
 
     event_dict, phot_dict = {}, {}
@@ -167,6 +169,9 @@ def tns_create(inname, send, production, repeater_of_objid, remarks):
         event_dict['repeater_of_objid'] = repeater_of_objid
     if remarks is not None:
         event_dict['remarks'] = remarks
+    if propdate is not None:
+        assert propdate.count(":") == 2 and propdate.count("-") == 2 and propdate.count(" ") == 1
+        event_dict['end_prop_period_date'] = propdate
 
     dd = caltechdata.set_metadata(triggerfile=inname)
 # TODO: test doing direct to TNS json instead of using voevent

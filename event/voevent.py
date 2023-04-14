@@ -288,7 +288,7 @@ def set_tns_dict(ve, phot_dict={}, event_dict={}):
     tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["flux_error"] = 0   # TODO: set this in Jy
     tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["limiting_flux"] = 0
     tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["obsdate"] = dtstring
-    tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["flux_units"] = 8
+    tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["flux_units"] = "8"
     tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["ref_freq"] = "1405"
     tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["inst_bandwidth"] = "187.5"
     tns_dict['frb_report']['0']["photometry"]["photometry_group"]["0"]["channels_no"] = 768
