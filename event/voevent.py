@@ -269,6 +269,9 @@ def set_tns_dict(ve, phot_dict={}, event_dict={}):
     tns_dict['frb_report']['0']['proprietary_period_groups'] = 132  # DSA-110
     tns_dict['frb_report']['0']["at_type"] = 5  # FRBs
 
+    if "end_prop_period_date" in event_dict:
+        tns_dict['frb_report']['0']["end_prop_period_date"] = event_dict["end_prop_period_date"]
+
     params = vp.get_grouped_params(ve)
     tns_dict['frb_report']['0']["dm"] = params['event parameters']['dm']['value']
     try:
