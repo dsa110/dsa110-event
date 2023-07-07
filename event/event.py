@@ -33,6 +33,7 @@ class DSAEvent:
     label: Optional[str] = None
     injected: Optional[bool] = None
     probability: Optional[float] = None
+    ibeam_prob: Optional[float] = None
     real: Optional[bool] = None
     T2_json: Optional[str] = None
     T2_csv: Optional[str] = None

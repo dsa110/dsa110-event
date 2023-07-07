@@ -2,6 +2,7 @@ import os
 import json
 import click
 import csv
+import subprocess
 from event import tns_api_bulk_report, caltechdata, voevent, labels
 
 @click.group('dsaevent')
@@ -142,12 +143,13 @@ def create_voevent(inname, outname, production):
 
 @cli.command()
 @click.argument('inname')
-@click.argument('destination')
+@click.option('--destination', type=str, default='3.13.26.235')
 def send_voevent(inname, destination):
     """ Read VOEvent XML file and send it somewhere
     """
 
-    pass
+    assert os.path.exists(inname), f"VOEvent file {inname} not found."
+    subprocess.call(f'comet-sendvo -h {destination} -f {inname}')
 
 
 @cli.command()
