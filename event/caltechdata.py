@@ -120,7 +120,7 @@ def set_metadata(triggerfile=None, schema='43', description=None):
 
         # overload with values from file
         for k, v in trigger.items():
-            if k in required + preferred:
+            if (k in required + preferred) and v is not None:
                 metadata[k] = v
         if "bf1_dm" in trigger:
             if trigger["bf1_dm"] is not None:
