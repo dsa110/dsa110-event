@@ -149,7 +149,7 @@ def send_voevent(inname, destination):
     """
 
     assert os.path.exists(inname), f"VOEvent file {inname} not found."
-    subprocess.call(f'comet-sendvo {destination} {inname}')
+    subprocess.call(['comet-sendvo', destination, inname])
 
 
 @cli.command()
