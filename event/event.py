@@ -49,6 +49,20 @@ class DSAEvent:
     corr07_header: Optional[str] = None
     corr08_data: Optional[str] = None
     corr08_header: Optional[str] = None
+    corr10_data: Optional[str] = None
+    corr10_header: Optional[str] = None
+    corr11_data: Optional[str] = None
+    corr11_header: Optional[str] = None
+    corr12_data: Optional[str] = None
+    corr12_header: Optional[str] = None
+    corr14_data: Optional[str] = None
+    corr14_header: Optional[str] = None
+    corr15_data: Optional[str] = None
+    corr15_header: Optional[str] = None
+    corr16_data: Optional[str] = None
+    corr16_header: Optional[str] = None
+    corr18_data: Optional[str] = None
+    corr18_header: Optional[str] = None
     corr19_data: Optional[str] = None
     corr19_header: Optional[str] = None
     corr21_data: Optional[str] = None
@@ -148,9 +162,12 @@ def create_event(fn):
     with open(fn) as fp:
         dd = json.load(fp)
 
-    try:
-        dsaevent = DSAEvent(**dd)
-    except TypeError:
+    if len(dd) != 1:
+        try:
+            dsaevent = DSAEvent(**dd)
+        except TypeError:
+            print('Error reading json file. It may have extra keys?')
+    else:
         # obsolete format written by initial trigger
         print('Found old trigger json format')
         assert len(dd), "dictionary read from json is empty"
