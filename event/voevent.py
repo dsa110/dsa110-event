@@ -196,8 +196,9 @@ def create_voevent(jsonfile=None, deployment=False, **kwargs):
 
     v.What.append(vp.Group(params=params, name='event parameters'))
 
+    # radecerr converted to degrees for VOEvent
     vp.add_where_when(v,
-                      coords=vp.Position2D(ra=str(dd['ra']), dec=str(dd['dec']), err=str(dd['radecerr']),
+                      coords=vp.Position2D(ra=str(dd['ra']), dec=str(dd['dec']), err=str(dd['radecerr']/3600),
                                            units='deg', system=vp.definitions.sky_coord_system.utc_fk5_geo),
                       obs_time=dt,
                       observatory_location='OVRO')
@@ -266,8 +267,14 @@ def set_tns_dict(ve, phot_dict={}, event_dict={}):
     tns_dict['frb_report']['0']["discovery_datetime"] = dtstring
     tns_dict['frb_report']['0']["reporting_groupid"] = 132  # DSA-110
     tns_dict['frb_report']['0']["groupid"] = 132  # DSA-110
-    tns_dict['frb_report']['0']['proprietary_period_groups'] = 132  # DSA-110
+    tns_dict['frb_report']['0']['proprietary_period_groups'] = ["132"]  # DSA-110
     tns_dict['frb_report']['0']["at_type"] = 5  # FRBs
+
+    if "prop_days" in event_dict:
+        tns_dict['frb_report']['0']["proprietary_period"] = {
+            "proprietary_period_value": event_dict["prop_days"],
+            "proprietary_period_units": "days"
+        }
 
     if "end_prop_period_date" in event_dict:
         tns_dict['frb_report']['0']["end_prop_period_date"] = event_dict["end_prop_period_date"]

@@ -193,9 +193,12 @@ def set_tns_dict(dd, phot_dict={}, event_dict={}):
     tns_dict['frb_report']['0']["discovery_datetime"] = time.Time(metadata['mjds'], format="mjd").iso
     tns_dict['frb_report']['0']["reporting_groupid"] = 132  # DSA-110
     tns_dict['frb_report']['0']["groupid"] = 132  # DSA-110
-    tns_dict['frb_report']['0']['proprietary_period_groups'] = 132  # DSA-110
-    tns_dict['frb_report']['0']["proprietary_period"] = {"proprietary_period_value": "0",
-                                                         "proprietary_period_units": "days"}
+    tns_dict['frb_report']['0']['proprietary_period_groups'] = ["132"]  # DSA-110
+    if "prop_days" in event_dict:
+        tns_dict['frb_report']['0']["proprietary_period"] = {
+            "proprietary_period_value": event_dict["prop_days"],
+            "proprietary_period_units": "days"
+        }
     if "end_prop_period_date" in event_dict:
         tns_dict['frb_report']['0']["end_prop_period_date"] = event_dict["end_prop_period_date"]
 
