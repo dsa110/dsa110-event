@@ -163,7 +163,7 @@ def tns_create(inname, send, production, repeater_of_objid, remarks, propdate):
     """ Takes T2 triggerfile to create report_filename in JSON format file with TNS metadata.
     Arguments send and production are boolean flags to do something with tns json file.
     Common optional fields are repeater_of_objid and remarks and propdate.
-    propdate sets the "end_prop_period" field. Date format is "2023-01-31 00:00:00.0+00:00".
+    propdate sets the "end_prop_period" field. Date format is "2023-01-31".
     """
 
     event_dict, phot_dict = {}, {}
@@ -172,10 +172,8 @@ def tns_create(inname, send, production, repeater_of_objid, remarks, propdate):
     if remarks is not None:
         event_dict['remarks'] = remarks
     if propdate is not None:
-        assert propdate.count(":") == 3 and propdate.count("-") == 2 and propdate.count(" ") == 1
+        assert propdate.count(":") == 2 and propdate.count("-") == 0 and propdate.count(" ") == 0
         event_dict['end_prop_period'] = propdate
-#    if propdays is not None:
-#        event_dict['prop_days'] = propdays
 
     dd = caltechdata.set_metadata(triggerfile=inname)
 # TODO: test doing direct to TNS json instead of using voevent
