@@ -16,12 +16,12 @@ tns_dict = {
       "ra": {
         "value": "",
         "error": "",
-        "units": "degrees"
+        "units": "deg"
       },
       "dec": {
         "value": "",
         "error": "",
-        "units": "degrees"
+        "units": "deg"
       },
       "reporting_groupid": "",
       "groupid": "",
