@@ -172,7 +172,7 @@ def tns_create(inname, send, production, repeater_of_objid, remarks, propdate):
     if remarks is not None:
         event_dict['remarks'] = remarks
     if propdate is not None:
-        assert propdate.count(":") == 2 and propdate.count("-") == 0 and propdate.count(" ") == 0
+        assert propdate.count("-") == 2 and propdate.count(":") == 0 and propdate.count(" ") == 0
         event_dict['end_prop_period'] = propdate
 
     dd = caltechdata.set_metadata(triggerfile=inname)
