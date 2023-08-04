@@ -175,7 +175,11 @@ def get_doi(metadata, url, production=False):
         print("DATACITEPWD not set")
     d = DataCiteRESTClient(username='CALTECH.OVRO', password=dcp, prefix=prefix, test_mode=(not production))
     doi = d.public_doi(metadata, url)
-    metadata['identifiers'].append({'identifier': doi, 'identifierType': 'DOI'})
+
+    # remove old DOI, if present
+    identifiers = [dd for dd in metadata['identifiers'] if dd['identifierType'] != 'DOI']
+    identifiers.append({'identifier': doi, 'identifierType': 'DOI'})
+    metadata['identifiers'] = identifiers
 
     return metadata
 
