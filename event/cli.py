@@ -46,10 +46,11 @@ def ctd_send(triggerfile, production, getdoi, files, version):
 @cli.command()
 @click.argument('metadata_json')
 @click.option('--production', is_flag=True, default=False, show_default=True)
+@click.option('--getdoi', is_flag=True, default=False, show_default=True)
 @click.option('--files', type=str, default=None)
 @click.option('--description', type=str, default=None)
 @click.option('--version', type=str, default=None)
-def ctd_update(metadata_json, production, files, description, version):
+def ctd_update(metadata_json, production, getdoi, files, description, version):
     """ Use metadata json file (from ctd_create) to update entry at Caltech Data.
     Can update description, files, version.
     versions:
@@ -68,14 +69,13 @@ def ctd_update(metadata_json, production, files, description, version):
     if version is not None:
         metadata['version'] = version
 
-    # TODO: add version to metadata
-    caltechdata.edit_ctd(metadata, production=production, files=files, publish=True)
+    metadata = caltechdata.edit_ctd(metadata, production=production, files=files, publish=True, getdoi=getdoi)
 
-    for Iddict in metadata['identifiers']:
-        if Iddict['identifierType'] == 'DOI':
-            doi = Iddict['identifier']
-            print(f'Got doi {doi} from metadata')
-    print(f'edited published entry with doi {doi}. Saving {metadata_json}')
+#    for Iddict in metadata['identifiers']:
+#        if Iddict['identifierType'] == 'DOI':
+#            doi = Iddict['identifier']
+#            print(f'Got doi {doi} from metadata')
+#    print(f'edited published entry with doi {doi}. Saving {metadata_json}')
 
     with open(metadata_json, 'w') as fp:
         json.dump(metadata, fp)
