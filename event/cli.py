@@ -2,6 +2,7 @@ import os
 import json
 import click
 import csv
+import subprocess
 from event import tns_api_bulk_report, caltechdata, voevent, labels
 
 @click.group('dsaevent')
@@ -142,12 +143,13 @@ def create_voevent(inname, outname, production):
 
 @cli.command()
 @click.argument('inname')
-@click.argument('destination')
+@click.option('--destination', type=str, default='3.13.26.235')
 def send_voevent(inname, destination):
     """ Read VOEvent XML file and send it somewhere
     """
 
-    pass
+    assert os.path.exists(inname), f"VOEvent file {inname} not found."
+    subprocess.call(['comet-sendvo', destination, inname])
 
 
 @cli.command()
@@ -161,7 +163,7 @@ def tns_create(inname, send, production, repeater_of_objid, remarks, propdate):
     """ Takes T2 triggerfile to create report_filename in JSON format file with TNS metadata.
     Arguments send and production are boolean flags to do something with tns json file.
     Common optional fields are repeater_of_objid and remarks and propdate.
-    propdate sets the "end_prop_period_date" field. Date format is "2023-01-31 00:00:00.0"
+    propdate sets the "end_prop_period" field. Date format is "2023-01-31".
     """
 
     event_dict, phot_dict = {}, {}
@@ -170,8 +172,8 @@ def tns_create(inname, send, production, repeater_of_objid, remarks, propdate):
     if remarks is not None:
         event_dict['remarks'] = remarks
     if propdate is not None:
-        assert propdate.count(":") == 2 and propdate.count("-") == 2 and propdate.count(" ") == 1
-        event_dict['end_prop_period_date'] = propdate
+        assert propdate.count("-") == 2 and propdate.count(":") == 0 and propdate.count(" ") == 0
+        event_dict['end_prop_period'] = propdate
 
     dd = caltechdata.set_metadata(triggerfile=inname)
 # TODO: test doing direct to TNS json instead of using voevent

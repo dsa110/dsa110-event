@@ -120,7 +120,7 @@ def set_metadata(triggerfile=None, schema='43', description=None):
 
         # overload with values from file
         for k, v in trigger.items():
-            if k in required + preferred:
+            if (k in required + preferred) and v is not None:
                 metadata[k] = v
         if "bf1_dm" in trigger:
             if trigger["bf1_dm"] is not None:
@@ -179,7 +179,6 @@ def set_tns_dict(dd, phot_dict={}, event_dict={}):
     - event_dict is dictionary for other TNS keys (from frb_report set): "remarks", "repeater_of_objid"
     """
 
-    # TODO: optional "end_prop_period"
     # TODO: flux/flux_error
     # TODO: galactic_max_dm, galactic_max_dm_model
     
@@ -193,11 +192,14 @@ def set_tns_dict(dd, phot_dict={}, event_dict={}):
     tns_dict['frb_report']['0']["discovery_datetime"] = time.Time(metadata['mjds'], format="mjd").iso
     tns_dict['frb_report']['0']["reporting_groupid"] = 132  # DSA-110
     tns_dict['frb_report']['0']["groupid"] = 132  # DSA-110
-    tns_dict['frb_report']['0']['proprietary_period_groups'] = 132  # DSA-110
-    tns_dict['frb_report']['0']["proprietary_period"] = {"proprietary_period_value": "0",
-                                                         "proprietary_period_units": "days"}
-    if "end_prop_period_date" in event_dict:
-        tns_dict['frb_report']['0']["end_prop_period_date"] = event_dict["end_prop_period_date"]
+    tns_dict['frb_report']['0']['proprietary_period_groups'] = ["132"]  # DSA-110
+#    if "prop_days" in event_dict:
+#        tns_dict['frb_report']['0']["proprietary_period"] = {
+#            "proprietary_period_value": event_dict["prop_days"],
+#            "proprietary_period_units": "days"
+#        }
+    if "end_prop_period" in event_dict:
+        tns_dict['frb_report']['0']["end_prop_period"] = str(event_dict["end_prop_period"])
 
     tns_dict['frb_report']['0']["at_type"] = 5  # FRBs
 
