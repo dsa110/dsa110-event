@@ -122,11 +122,10 @@ def create_voevent(jsonfile=None, deployment=False, **kwargs):
 
     # create voevent instance
     role = vp.definitions.roles.observation if deployment else vp.definitions.roles.test
-    v = vp.Voevent(stream='',  # TODO: check
-                   stream_id=1, role=role)
+    v = vp.Voevent(stream='edu.caltech.dsa-110', stream_id=1, role=role)
 
     vp.set_who(v, date=datetime.datetime.utcnow(),
-               author_ivorn="ivo://org.caltech.dsa-110/comet_broker") # TODO: check
+               author_ivorn="edu.caltech.dsa-110/comet_broker") # TODO: check
 
     vp.set_author(v, title="DSA-110 Testing Node",
                   contactName="Casey Law", contactEmail="claw@astro.caltech.edu"
