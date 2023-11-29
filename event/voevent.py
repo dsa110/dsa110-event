@@ -127,7 +127,7 @@ def create_voevent(jsonfile=None, deployment=False, **kwargs):
     vp.set_who(v, date=datetime.datetime.utcnow(),
                author_ivorn="edu.caltech.dsa-110/comet_broker") # TODO: check
 
-    vp.set_author(v, title="DSA-110 Testing Node",
+    vp.set_author(v, title="DSA-110",
                   contactName="Casey Law", contactEmail="claw@astro.caltech.edu"
     )
 

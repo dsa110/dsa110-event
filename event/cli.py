@@ -129,7 +129,7 @@ def archive_update(metadata_json, notes, csvfile):
 @cli.command()
 @click.argument('inname')
 @click.argument('outname')
-@click.option('--production', type=bool, default=False)
+@click.option('--production', type=bool, default=False, is_flag=True, show_default=True)
 def create_voevent(inname, outname, production):
     """ Takes T2 json (triggerfile) with key-value pairs for create_voevent function.
     Required fields: ra, dec, radecerr, dm, width, snr, internalname, mjd
@@ -137,7 +137,7 @@ def create_voevent(inname, outname, production):
     """
 
     dd = caltechdata.set_metadata(triggerfile=inname)
-    ve = voevent.create_voevent(**dd)
+    ve = voevent.create_voevent(deployment=production, **dd)
     voevent.write_voevent(ve, outname=outname)
 
 
