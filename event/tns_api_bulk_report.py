@@ -275,7 +275,7 @@ def print_feedback(json_feedback):
                 m="Message = "+m
             msg.append(["Message ID = "+m_id,m])
     # return messages       
-    return msg
+    return msg, str(objname[n_o])
 
 # sending report id to get reply of the report
 # and printing that reply
@@ -295,6 +295,7 @@ def print_reply(url,report_id):
         if type(feedback[0])==type([]):
             feedback=feedback[0]
         # go trough feedback
+        objname = None
         for i in range(len(feedback)):
             # feedback as json data
             json_f=feedback[i]
@@ -306,7 +307,7 @@ def print_reply(url,report_id):
             for j in range(len(feedback_keys)):
                 key=feedback_keys[j]
                 json_feed=json_f[key]
-                msg=msg+print_feedback(json_feed)
+                msg, objname = msg+print_feedback(json_feed)
             if msg!=[]:
                 print ("-----------------------------------"\
                        "-----------------------------------" )
@@ -314,7 +315,8 @@ def print_reply(url,report_id):
                     print (msg[k][0])
                     print (msg[k][1])
                 print ("-----------------------------------"\
-                       "-----------------------------------\n") 
+                       "-----------------------------------\n")
+        return objname
     else:
         if (reply_res_check!=None):
             print ("The report doesn't exist on the TNS.")
@@ -367,11 +369,11 @@ def send_report(report, production=False):
                 break
             counter += 1
         enablePrint()
-        print_reply(url, report_id)
-        return report_id
+        objname = print_reply(url, report_id)
+        return report_id, objname
     else:
         print ("The report was not sent to the TNS.")
-        return None
+        return None, None
 
 
 def get_reply(Id, production=False):

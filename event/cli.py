@@ -89,6 +89,7 @@ def archive_update(metadata_json, notes, csvfile):
     """ Use metadata_json saved by ctd_send to add line to  events.csv file for dsa110-archive.
     metadata file should have doi and version.
     Notes can be appended to identify the nature of the event. Suggestions:
+    - "FRB 20240229A or Casey"
     - test
     - pulsar
     - frb
@@ -188,7 +189,7 @@ def tns_create(inname, send, production, repeater_of_objid, remarks, propdate):
         os.remove(fn)
     voevent.write_tns(dd2, fn)
     if send:
-        result = tns_api_bulk_report.send_report(fn, production)
+        report_id, objname = tns_api_bulk_report.send_report(fn, production)
 
 
 @cli.command()
@@ -205,4 +206,4 @@ def tns_send(inname, production, send):
         print(f"file {inname} not found")
 
     if send:
-        result = tns_api_bulk_report.send_report(inname, production)
+        report_id, objname = tns_api_bulk_report.send_report(inname, production)
