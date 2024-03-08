@@ -62,7 +62,7 @@ def create_ctd(triggerfile, files=None, getidv=True, getdoi=False, production=Fa
     return metadata
 
 
-def edit_ctd(metadata, idv=None, files=None, production=False, version=None, description=None, publish=True):
+def edit_ctd(metadata, idv=None, files=None, production=False, version=None, description=None, getdoi=False, publish=True):
     """ Edit an entry at Caltech Data.
     Can provide metadata with url field to get caltech data idv or provide idv and metadata explicitly.
     metadata should be that returned by create_ctd. idv should be in metadata as an identifier.
@@ -91,8 +91,17 @@ def edit_ctd(metadata, idv=None, files=None, production=False, version=None, des
 
     assert idv is not None
     
+    if getdoi:
+        url = f'https://data.caltech.edu/records/{idv}'
+        metadata = get_doi(metadata, url, production=production)
+        print(f"Created DOI to point to published location at {url}")
+    else:
+        print("No DOI created")
+
     # upload supporting data
     caltechdata_edit(idv=idv, token=token, metadata=metadata, files=files, production=production, publish=publish)
+
+    return metadata
 
 
 def set_metadata(triggerfile=None, schema='43', description=None):
@@ -166,7 +175,11 @@ def get_doi(metadata, url, production=False):
         print("DATACITEPWD not set")
     d = DataCiteRESTClient(username='CALTECH.OVRO', password=dcp, prefix=prefix, test_mode=(not production))
     doi = d.public_doi(metadata, url)
-    metadata['identifiers'].append({'identifier': doi, 'identifierType': 'DOI'})
+
+    # remove old DOI, if present
+    identifiers = [dd for dd in metadata['identifiers'] if dd['identifierType'] != 'DOI']
+    identifiers.append({'identifier': doi, 'identifierType': 'DOI'})
+    metadata['identifiers'] = identifiers
 
     return metadata
 
