@@ -275,7 +275,7 @@ def print_feedback(json_feedback):
                 m="Message = "+m
             msg.append(["Message ID = "+m_id,m])
     # return messages       
-    return msg, str(objname[n_o])
+    return msg, str(objname)
 
 # sending report id to get reply of the report
 # and printing that reply
@@ -307,7 +307,8 @@ def print_reply(url,report_id):
             for j in range(len(feedback_keys)):
                 key=feedback_keys[j]
                 json_feed=json_f[key]
-                msg, objname = msg+print_feedback(json_feed)
+                msg2, objname = print_feedback(json_feed)
+                msg += msg2
             if msg!=[]:
                 print ("-----------------------------------"\
                        "-----------------------------------" )

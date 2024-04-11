@@ -182,7 +182,7 @@ def create_event(fn):
     return dsaevent
 
 
-def doit(triggerfile, remarks, notes=None, files=None, production=True, getdoi=True, version=0.1, propdate=None, send=False, repeater_of_objid=None, csvfile='events.csv'):
+def doit(triggerfile, remarks, notes=None, files=None, production=True, getdoi=True, version=0.1, propdate=None, send=True, repeater_of_objid=None, csvfile='events.csv'):
     """
     Automated release of event via its T2 json trigger file.
     remarks appear on tns entry and help associate to common name (e.g., "a.k.a. casey")
@@ -230,6 +230,10 @@ def doit(triggerfile, remarks, notes=None, files=None, production=True, getdoi=T
     voevent.write_tns(dd2, fn)
     if send:
         report_id, objname = tns_api_bulk_report.send_report(fn, production)
+        assert len(objname) == 1
+        objname = objname[0]
+    else:
+        objname = 'Unnamed'
 
     # archive_update
     with open(metadata_json, 'r') as fp:
