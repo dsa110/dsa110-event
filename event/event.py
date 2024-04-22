@@ -230,8 +230,10 @@ def doit(triggerfile, remarks, notes=None, files=None, production=True, getdoi=T
     voevent.write_tns(dd2, fn)
     if send:
         report_id, objname = tns_api_bulk_report.send_report(fn, production)
-        assert len(objname) == 1
-        objname = objname[0]
+        if len(objname) == 1:
+            objname = objname[0]
+        else:
+            print(f"objname is longer than length 1: {objname}")
     else:
         objname = 'Unnamed'
 

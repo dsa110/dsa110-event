@@ -275,7 +275,7 @@ def print_feedback(json_feedback):
                 m="Message = "+m
             msg.append(["Message ID = "+m_id,m])
     # return messages       
-    return msg, str(objname)
+    return msg, objname
 
 # sending report id to get reply of the report
 # and printing that reply
