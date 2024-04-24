@@ -410,6 +410,36 @@ def upload(url, list_of_files):
         print ("Files are not uploaded on the TNS.")
     print ("\n")
 
+
+#----------------------------------------------------------------------------------
+# proprietary period update code
+#----------------------------------------------------------------------------------
+
+
+def set_bot_tns_marker():
+    tns_marker = 'tns_marker{"tns_id": "' + str(YOUR_BOT_ID) + '", "type": "bot", "name": "' + YOUR_BOT_NAME + '"}'
+    return tns_marker
+
+
+def set_prop_period(objname, propdate):
+    """ Sets the end date of proprietary period for a given objname.
+    objname should refer to existing TNS entry.
+    propdate should be in yyyy-mm-dd format.
+    """
+    assert propdate.count("-") == 2 and propdate.count(":") == 0 and propdate.count(" ") == 0
+
+    prop_per = [("objname", objname), ("reporting_groupid", "132"), ("end_prop_period_date", propdate),
+                ("at", "0"), ("classification", "0"), ("spectra", "0"), ("frb", "1")]
+
+    url_tns_api = "https://" + TNSproduction + "/api/set"
+    prop_period_url = url_tns_api + "/prop-period"
+    tns_marker = set_bot_tns_marker()
+    headers = {'User-Agent': tns_marker}
+    json_file = OrderedDict(prop_per)
+    pro_period_data = {'api_key': api_key, 'data': json.dumps(json_file)}
+    response = requests.post(prop_period_url, headers = headers, data = pro_period_data)
+    return response
+
 ###########################################################################################
 ###########################################################################################
 
@@ -441,4 +471,3 @@ id_report="62086"
 print_reply(url_tns_api,id_report)
 #---------------------------------------------------
 """
-

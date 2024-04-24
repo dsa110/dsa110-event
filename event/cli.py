@@ -207,3 +207,16 @@ def tns_send(inname, production, send):
 
     if send:
         report_id, objname = tns_api_bulk_report.send_report(inname, production)
+
+
+@cli.command()
+@click.argument('objname', type=str)
+@click.argument('propdate', type=str)
+def tns_update_propdate(objname, propdate):
+    """ Update the proprietary end date for objname.
+    objname is an existing entry in TNS.
+    propdate is end date in this format: "yyyy-mm-dd"
+    """
+
+    response = tns_api_bulk_report.set_prop_period(objname, propdate)
+    print(tns_api_bulk_report.format_to_json(response.text))
