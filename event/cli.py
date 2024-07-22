@@ -46,10 +46,11 @@ def ctd_send(triggerfile, production, getdoi, files, version):
 @cli.command()
 @click.argument('metadata_json')
 @click.option('--production', is_flag=True, default=False, show_default=True)
+@click.option('--getdoi', is_flag=True, default=False, show_default=True)
 @click.option('--files', type=str, default=None)
 @click.option('--description', type=str, default=None)
 @click.option('--version', type=str, default=None)
-def ctd_update(metadata_json, production, files, description, version):
+def ctd_update(metadata_json, production, getdoi, files, description, version):
     """ Use metadata json file (from ctd_create) to update entry at Caltech Data.
     Can update description, files, version.
     versions:
@@ -68,14 +69,13 @@ def ctd_update(metadata_json, production, files, description, version):
     if version is not None:
         metadata['version'] = version
 
-    # TODO: add version to metadata
-    caltechdata.edit_ctd(metadata, production=production, files=files, publish=True)
+    metadata = caltechdata.edit_ctd(metadata, production=production, files=files, publish=True, getdoi=getdoi)
 
-    for Iddict in metadata['identifiers']:
-        if Iddict['identifierType'] == 'DOI':
-            doi = Iddict['identifier']
-            print(f'Got doi {doi} from metadata')
-    print(f'edited published entry with doi {doi}. Saving {metadata_json}')
+#    for Iddict in metadata['identifiers']:
+#        if Iddict['identifierType'] == 'DOI':
+#            doi = Iddict['identifier']
+#            print(f'Got doi {doi} from metadata')
+#    print(f'edited published entry with doi {doi}. Saving {metadata_json}')
 
     with open(metadata_json, 'w') as fp:
         json.dump(metadata, fp)
@@ -89,6 +89,7 @@ def archive_update(metadata_json, notes, csvfile):
     """ Use metadata_json saved by ctd_send to add line to  events.csv file for dsa110-archive.
     metadata file should have doi and version.
     Notes can be appended to identify the nature of the event. Suggestions:
+    - "FRB 20240229A or Casey"
     - test
     - pulsar
     - frb
@@ -129,7 +130,7 @@ def archive_update(metadata_json, notes, csvfile):
 @cli.command()
 @click.argument('inname')
 @click.argument('outname')
-@click.option('--production', type=bool, default=False)
+@click.option('--production', type=bool, default=False, is_flag=True, show_default=True)
 def create_voevent(inname, outname, production):
     """ Takes T2 json (triggerfile) with key-value pairs for create_voevent function.
     Required fields: ra, dec, radecerr, dm, width, snr, internalname, mjd
@@ -137,7 +138,7 @@ def create_voevent(inname, outname, production):
     """
 
     dd = caltechdata.set_metadata(triggerfile=inname)
-    ve = voevent.create_voevent(**dd)
+    ve = voevent.create_voevent(deployment=production, **dd)
     voevent.write_voevent(ve, outname=outname)
 
 
@@ -188,7 +189,7 @@ def tns_create(inname, send, production, repeater_of_objid, remarks, propdate):
         os.remove(fn)
     voevent.write_tns(dd2, fn)
     if send:
-        result = tns_api_bulk_report.send_report(fn, production)
+        report_id, objname = tns_api_bulk_report.send_report(fn, production)
 
 
 @cli.command()
@@ -205,4 +206,17 @@ def tns_send(inname, production, send):
         print(f"file {inname} not found")
 
     if send:
-        result = tns_api_bulk_report.send_report(inname, production)
+        report_id, objname = tns_api_bulk_report.send_report(inname, production)
+
+
+@cli.command()
+@click.argument('objname', type=str)
+@click.argument('propdate', type=str)
+def tns_update_propdate(objname, propdate):
+    """ Update the proprietary end date for objname.
+    objname is an existing entry in TNS.
+    propdate is end date in this format: "yyyy-mm-dd"
+    """
+
+    response = tns_api_bulk_report.set_prop_period(objname, propdate)
+    print(tns_api_bulk_report.format_to_json(response.text))

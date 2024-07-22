@@ -1,7 +1,10 @@
+import csv
+import os
 from pathlib import Path
 import json
 from dataclasses import dataclass, asdict
 from typing import Optional, Any
+from event import tns_api_bulk_report, caltechdata, voevent, labels
 
 OUTPUT_PATH = '/dataz/dsa110/operations/T3/'
 
@@ -177,3 +180,90 @@ def create_event(fn):
         dsaevent = DSAEvent(**dd2)
 
     return dsaevent
+
+
+def doit(triggerfile, remarks, notes=None, files=None, production=True, getdoi=True, version=0.1, propdate=None, send=True, repeater_of_objid=None, csvfile='events.csv'):
+    """
+    Automated release of event via its T2 json trigger file.
+    remarks appear on tns entry and help associate to common name (e.g., "a.k.a. casey")
+    notes appear on dsa-110 archive. Default append TNS name to remarks (e.g., "{remarks} or FRB 2024...").
+    files should be a list of full path to files on disk to make public at caltech data and associate with event.
+    propdate sets the tns public date (e.g., "2025-01-31").
+    Outcome is: an entry at caltech-data, an entry at tns, an official name, and a csv file that can be pushed to github.
+    """
+
+    # ctd_send
+    metadata = caltechdata.create_ctd(triggerfile=triggerfile, production=production, getdoi=getdoi, version=version)
+    for Iddict in metadata['identifiers']:
+        if Iddict['identifierType'] == 'DOI':
+            doi = Iddict['identifier']
+            print(f'Got doi {doi} from metadata')
+
+    print(f'Created metadata from {triggerfile} with doi {doi}')
+
+    metadata_json = f'metadata_{triggerfile}'
+    print(f'Saving {metadata_json}')
+    with open(metadata_json, 'w') as fp:
+        json.dump(metadata, fp)
+
+    caltechdata.edit_ctd(metadata, files=files, production=production)  # publishes by default
+
+    # tns_create
+    event_dict, phot_dict = {}, {}
+    if repeater_of_objid is not None:
+        event_dict['repeater_of_objid'] = repeater_of_objid
+    if remarks is not None:
+        event_dict['remarks'] = remarks
+    if propdate is not None:
+        assert propdate.count("-") == 2 and propdate.count(":") == 0 and propdate.count(" ") == 0
+        event_dict['end_prop_period'] = propdate
+
+    dd = caltechdata.set_metadata(triggerfile=triggerfile)
+    ve = voevent.create_voevent(**dd)
+    dd2 = voevent.set_tns_dict(ve, phot_dict=phot_dict, event_dict=event_dict)
+
+    # tmp file to send
+    fn = f'tns_report_{ve.Why.Name}.json'
+    if os.path.exists(fn):
+        print(f"Removing older version of {fn}")
+        os.remove(fn)
+    voevent.write_tns(dd2, fn)
+    if send:
+        report_id, objname = tns_api_bulk_report.send_report(fn, production)
+        if len(objname) == 1:
+            objname = objname[0]
+        else:
+            print(f"objname is longer than length 1: {objname}")
+    else:
+        objname = 'Unnamed'
+
+    # archive_update
+    with open(metadata_json, 'r') as fp:
+        dd = json.load(fp)
+
+    if notes is None:
+        dd['notes'] = f"{remarks} or {objname}"
+
+    for Iddict in dd['identifiers']:
+        if Iddict['identifierType'] == 'DOI':
+            doi = Iddict['identifier']
+            dd['doi'] = doi
+            print(f'Got doi {doi} from metadata')
+    
+    columns = ['internalname', 'mjds', 'dm', 'width', 'snr', 'ra', 'dec', 'radecerr', 'notes', 'version', 'doi']
+    colheader = ['Internal Name', 'MJD', 'DM', 'Width', 'SNR', 'RA', 'Dec', 'RADecErr', 'Notes', 'Version', 'doi']
+
+    # verify that columns are correct?
+
+    row = [dd[column] for column in columns]
+    if os.path.exists(csvfile):
+        code = 'a'
+    else:
+        code = 'w'
+    with open(csvfile, code) as fp:
+        csvwriter = csv.writer(fp)
+        if code == 'w':
+            csvwriter.writerow(colheader)  # no need if appending
+        csvwriter.writerow(row)
+
+    # still need to commit and push to github
