@@ -58,6 +58,7 @@ def ctd_update(metadata_json, production, getdoi, files, description, version):
     - use version 1.0 to refer to standard data package with "final" processing (e.g., in January)
     - use version 1.x to refer to minor updates that don't affect science
     - use version x.0 to refer to major fixes with (for x>1)
+    - use version >=2 to refer to release with filterbank files
     """
 
     with open(metadata_json, 'r') as fp:
@@ -83,11 +84,13 @@ def ctd_update(metadata_json, production, getdoi, files, description, version):
 
 @cli.command()
 @click.argument('metadata_json')
-@click.option('--notes')
+@click.option('--notes', default='')
+@click.option('--publication', default='')
 @click.option('--csvfile', default='events.csv')
-def archive_update(metadata_json, notes, csvfile):
+def archive_update(metadata_json, notes, publication, csvfile):
     """ Use metadata_json saved by ctd_send to add line to  events.csv file for dsa110-archive.
     metadata file should have doi and version.
+    publication should be a bibcode such used by ADS, such as 2024ApJ...964..131S.
     Notes can be appended to identify the nature of the event. Suggestions:
     - "FRB 20240229A or Casey"
     - test
@@ -100,6 +103,8 @@ def archive_update(metadata_json, notes, csvfile):
         dd = json.load(fp)
 
     dd['notes'] = notes
+    dd['Publication'] = Publication
+        
 
     for Iddict in dd['identifiers']:
         if Iddict['identifierType'] == 'DOI':
@@ -107,8 +112,8 @@ def archive_update(metadata_json, notes, csvfile):
             dd['doi'] = doi
             print(f'Got doi {doi} from metadata')
     
-    columns = ['internalname', 'mjds', 'dm', 'width', 'snr', 'ra', 'dec', 'radecerr', 'notes', 'version', 'doi']
-    colheader = ['Internal Name', 'MJD', 'DM', 'Width', 'SNR', 'RA', 'Dec', 'RADecErr', 'Notes', 'Version', 'doi']
+    columns = ['internalname', 'mjds', 'dm', 'width', 'snr', 'ra', 'dec', 'radecerr', 'notes', 'version', 'doi', 'Publication']
+    colheader = ['Internal Name', 'MJD', 'DM', 'Width', 'SNR', 'RA', 'Dec', 'RADecErr', 'Notes', 'Version', 'doi', 'Publication']
 
     # verify that columns are correct?
 
