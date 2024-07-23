@@ -125,7 +125,7 @@ def create_voevent(jsonfile=None, deployment=False, **kwargs):
     v = vp.Voevent(stream='edu.caltech.dsa-110', stream_id=1, role=role)
 
     vp.set_who(v, date=datetime.datetime.utcnow(),
-               author_ivorn=f"caltech/dsa-110#{str(dd['internalname']}/{str(dd['mjds'])}")
+               author_ivorn=f"caltech/dsa-110#{str(dd['internalname'])}/{str(dd['mjds'])}")
 
     vp.set_author(v, contactName="Casey Law", contactEmail="claw@astro.caltech.edu")
 

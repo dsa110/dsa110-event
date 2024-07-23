@@ -103,8 +103,7 @@ def archive_update(metadata_json, notes, publication, csvfile):
         dd = json.load(fp)
 
     dd['notes'] = notes
-    dd['Publication'] = Publication
-        
+    dd['Publication'] = publication
 
     for Iddict in dd['identifiers']:
         if Iddict['identifierType'] == 'DOI':
