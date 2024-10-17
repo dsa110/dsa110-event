@@ -22,7 +22,16 @@ class DSAEvent:
     ra: float
     dec: float
     trigname: str
-    raerr: Optional[float] = None
+    snrs0: Optional[float] = None
+    snrs1: Optional[float] = None
+    snrs2: Optional[float] = None
+    snrs3: Optional[float] = None
+    snrs4: Optional[float] = None
+    beams0: Optional[int] = None
+    beams1: Optional[int] = None
+    beams2: Optional[int] = None
+    beams3: Optional[int] = None
+    beams4: Optional[int] = None
     decerr: Optional[float] = None
     radecerr: Optional[float] = None
     dmerr: Optional[float] = None
