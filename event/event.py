@@ -32,6 +32,7 @@ class DSAEvent:
     beams2: Optional[int] = None
     beams3: Optional[int] = None
     beams4: Optional[int] = None
+    raerr: Optional[float] = None
     decerr: Optional[float] = None
     radecerr: Optional[float] = None
     dmerr: Optional[float] = None
@@ -178,6 +179,7 @@ def create_event(fn):
         try:
             dsaevent = DSAEvent(**dd)
         except TypeError:
+            dsaevent = None
             print('Error reading json file. It may have extra keys?')
     else:
         # obsolete format written by initial trigger
