@@ -23,11 +23,14 @@ def increment_name(mjd, lastname=None, suffixlength=4):
     """ Use mjd to create unique name for event.
     """
 
+
     dt = time.Time(mjd, format='mjd', scale='utc').to_datetime()
+    print(f'Incrementing {lastname} at MJD={mjd} or {dt}')
     if lastname is None:  # generate new name for this yymmdd
         suffix = string.ascii_lowercase[0]*suffixlength
     else:
         yymmdd = lastname.split('_inj')[0][:-suffixlength]
+        print(f'parsed yymmdd: {yymmdd}')
         dt0 = datetime.datetime(int('20'+yymmdd[0:2]), int(yymmdd[2:4]), int(yymmdd[4:6]))
         if dt.year > dt0.year or dt.month > dt0.month or dt.day > dt0.day:
             # new day, so name starts over
