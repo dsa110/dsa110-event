@@ -1,7 +1,7 @@
 import string
 import datetime
 from astropy import time
-
+import random
 
 def get_lastname():
     """ Look at etcd to get name of last triggered candidate
@@ -26,22 +26,26 @@ def increment_name(mjd, lastname=None, suffixlength=4):
 
     dt = time.Time(mjd, format='mjd', scale='utc').to_datetime()
     print(f'Incrementing {lastname} at MJD={mjd} or {dt}')
-    if lastname is None:  # generate new name for this yymmdd
-        suffix = string.ascii_lowercase[0]*suffixlength
-    else:
-        yymmdd = lastname.split('_inj')[0][:-suffixlength]
-        print(f'parsed yymmdd: {yymmdd}')
-        dt0 = datetime.datetime(int('20'+yymmdd[0:2]), int(yymmdd[2:4]), int(yymmdd[4:6]))
-        if dt.year > dt0.year or dt.month > dt0.month or dt.day > dt0.day:
-            # new day, so name starts over
-            suffix = string.ascii_lowercase[0]*suffixlength
-        else:
-            # same day, so increment name
-            lastsuffix = lastname.split('_inj')[0][-suffixlength:]
-            lastnumber = suffixtonumber(lastsuffix)
-            suffix = f'{numbertosuffix(lastnumber+1):a>4}'  # increment name
+    newname = lastname
+    while newname == lastname:
+        suffix = ''.join(random.choices(string.ascii_lowercase, k=suffixlength))
+        newname = f'{str(dt.year)[2:]}{dt.month:02d}{dt.day:02d}{suffix}'
 
-    newname = f'{str(dt.year)[2:]}{dt.month:02d}{dt.day:02d}{suffix}'
+    #if lastname is None:  # generate new name for this yymmdd
+    #    suffix = string.ascii_lowercase[0]*suffixlength
+    #else:
+    #    yymmdd = lastname.split('_inj')[0][:-suffixlength]
+    #    dt0 = datetime.datetime(int('20'+yymmdd[0:2]), int(yymmdd[2:4]), int(yymmdd[4:6]))
+    #    if dt.year > dt0.year or dt.month > dt0.month or dt.day > dt0.day:
+    #        # new day, so name starts over
+    #        suffix = string.ascii_lowercase[0]*suffixlength
+    #    else:
+    #        # same day, so increment name
+    #        lastsuffix = lastname.split('_inj')[0][-suffixlength:]
+    #        lastnumber = suffixtonumber(lastsuffix)
+    #        suffix = f'{numbertosuffix(lastnumber+1):a>4}'  # increment name
+
+    #newname = f'{str(dt.year)[2:]}{dt.month:02d}{dt.day:02d}{suffix}'
     print(f'Incrementing name from "{lastname}" to "{newname}".')
 
     return newname

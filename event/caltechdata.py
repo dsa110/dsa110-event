@@ -124,8 +124,8 @@ def set_metadata(triggerfile=None, schema='43', description=None):
         trigger = asdict(dc)
         # default values (assuming T2/search beam detection)
         metadata['width'] = 0.262144*trigger['ibox']   # TODO: use cnf?
-        metadata['raerr'] = 30  # only correct at dec=0 for real-time beam
-        metadata['decerr'] = 3.4*3600  # only correct at dec=0 for real-time beam
+        metadata['raerr'] = 60  # only correct at dec=0 for real-time beam
+        metadata['decerr'] = 60  # only correct at dec=0 for real-time beam
 
         # overload with values from file
         for k, v in trigger.items():
