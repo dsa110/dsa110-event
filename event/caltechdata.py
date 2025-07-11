@@ -95,11 +95,22 @@ def edit_ctd(metadata, idv=None, files=None, production=False, version=None, des
         url = f'https://data.caltech.edu/records/{idv}'
         metadata = get_doi(metadata, url, production=production)
         print(f"Created DOI to point to published location at {url}")
+        for Iddict in metadata['identifiers']:
+            if Iddict['identifierType'] == 'DOI':
+                doi = Iddict['identifier']
+                print(f'Got doi {doi} from metadata')
     else:
         print("No DOI created")
 
     # upload supporting data
-    caltechdata_edit(idv=idv, token=token, metadata=metadata, files=files, production=production, publish=publish)
+    record_id = caltechdata_edit(idv=idv, token=token, metadata=metadata,
+                                 files=files, production=production,
+                                 publish=publish, return_id=True)
+
+    if doi:
+        d = DataCiteRESTClient(username='CALTECH.OVRO', password=dcp, prefix=prefix, test_mode=(not production))
+        url = 'https://data.caltech.edu/records/' + record_id
+        doi = d.update_url(doi, url)
 
     return metadata
 
