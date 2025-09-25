@@ -100,12 +100,25 @@ def edit_ctd(metadata, idv=None, files=None, production=False, version=None, des
                 doi = Iddict['identifier']
                 print(f'Got doi {doi} from metadata')
     else:
+        doi = None
         print("No DOI created")
 
     # upload supporting data
     record_id = caltechdata_edit(idv=idv, token=token, metadata=metadata,
                                  files=files, production=production,
                                  publish=publish, return_id=True)
+
+    # development
+    dcprefix_dev = '10.22013'
+#    dcurl_dev = 'http://doi.test.datacite.org'
+    # production
+    dcprefix_prod = '10.25800'
+#    dcurl_prod = 'http://doi.datacite.org'
+
+    if production:
+        prefix = dcprefix_prod
+    else:
+        prefix = dcprefix_dev
 
     if doi:
         d = DataCiteRESTClient(username='CALTECH.OVRO', password=dcp, prefix=prefix, test_mode=(not production))

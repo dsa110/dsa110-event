@@ -141,7 +141,7 @@ def send_tsv_report(url,tsv_report):
 def send_json_report(url, json_report):
   try:
     # url for sending json reports
-    json_url=url+'/bulk-report'
+    json_url=url+'/set/bulk-report'
     # headers
     headers={'User-Agent':'tns_marker{"tns_id":'+str(YOUR_BOT_ID)+', "type":"bot",'\
              ' "name":"'+YOUR_BOT_NAME+'"}'}    
@@ -163,7 +163,7 @@ def send_json_report(url, json_report):
 def reply(url, report_id):
   try:
     # url for getting report reply
-    reply_url=url+'/bulk-report-reply'
+    reply_url=url+'/get/bulk-report-reply'
     # headers
     headers={'User-Agent':'tns_marker{"tns_id":'+str(YOUR_BOT_ID)+', "type":"bot",'\
              ' "name":"'+YOUR_BOT_NAME+'"}'}
