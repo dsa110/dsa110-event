@@ -139,7 +139,9 @@ def set_metadata(triggerfile=None, schema='43', description=None):
         metadata = json.load(fp)
 
     required = ['internalname', 'mjds', 'dm', 'width', 'snr', 'ra', 'dec', 'radecerr']
+    # units = [-, mjd, pc/c3, ms, -, deg, deg, arcsec]
     preferred = ['fluence', 'p_flux', 'importance', 'dmerr', 'raerr', 'decerr']
+    # units = [Jy ms, Jy, -, pc/cm3, arcsec, arcsec]
 
     # set values
     if triggerfile is not None:   # typical format as found on h23
@@ -148,8 +150,10 @@ def set_metadata(triggerfile=None, schema='43', description=None):
         trigger = asdict(dc)
         # default values (assuming T2/search beam detection)
         metadata['width'] = 0.262144*trigger['ibox']   # TODO: use cnf?
-        metadata['raerr'] = 60  # only correct at dec=0 for real-time beam
-        metadata['decerr'] = 60  # only correct at dec=0 for real-time beam
+        if dc.raerr is None:
+            metadata['raerr'] = 60  # only correct at dec=0 for real-time beam
+        if dc.decerr is None:
+            metadata['decerr'] = 60  # only correct at dec=0 for real-time beam
 
         # overload with values from file
         for k, v in trigger.items():
