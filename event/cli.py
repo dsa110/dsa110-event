@@ -158,6 +158,16 @@ def send_voevent(inname, destination):
 
 
 @cli.command()
+@click.argument('jsonfile')
+def gcn_send(jsonfile):
+    """ Read trigger jsonfile and send a GCN notice
+    """
+
+    assert os.path.exists(inname), f"jsonfile {jsonfile} not found."
+    gcn.gcn_send(jsonfile, env="test")
+
+
+@cli.command()
 @click.argument('inname')
 @click.option('--send', type=bool, default=False, is_flag=True, show_default=True)
 @click.option('--production', type=bool, default=False, is_flag=True, show_default=True)
