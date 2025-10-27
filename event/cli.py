@@ -3,7 +3,7 @@ import json
 import click
 import csv
 import subprocess
-from event import tns_api_bulk_report, caltechdata, voevent, labels
+from event import tns_api_bulk_report, caltechdata, voevent, gcn
 
 @click.group('dsaevent')
 def cli():
