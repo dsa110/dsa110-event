@@ -163,7 +163,7 @@ def gcn_send(jsonfile):
     """ Read trigger jsonfile and send a GCN notice
     """
 
-    assert os.path.exists(inname), f"jsonfile {jsonfile} not found."
+    assert os.path.exists(jsonfile), f"jsonfile {jsonfile} not found."
     gcn.gcn_send(jsonfile, env="test")
 
 
