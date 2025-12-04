@@ -8,10 +8,12 @@ def gcn_send(jsonfile, env='prod', topic='gcn.notices.dsa110.frb'):
     """
 
     if env == 'test':
+        print("using test credentials")
         domain = 'test.gcn.nasa.gov'
         client_id = os.environ.get('GCN_ID_PRO_TEST', '')
         client_secret = os.environ.get('GCN_SECRET_PRO_TEST', '')
     elif env == 'prod':
+        print("using prod credentials")
         domain = 'gcn.nasa.gov'
         client_id = os.environ.get('GCN_ID_PRO', '')
         client_secret = os.environ.get('GCN_SECRET_PRO', '')
