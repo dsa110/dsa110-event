@@ -3,7 +3,7 @@ import os
 from gcn_kafka import Producer
 from astropy.time import Time
 
-def gcn_send(jsonfile, env='test', topic='gcn.notices.dsa110.frb'):
+def gcn_send(jsonfile, env='prod', topic='gcn.notices.dsa110.frb'):
     """ Use trigger json to send GCN notice
     """
 
@@ -11,10 +11,14 @@ def gcn_send(jsonfile, env='test', topic='gcn.notices.dsa110.frb'):
         domain = 'test.gcn.nasa.gov'
         client_id = os.environ.get('GCN_ID_PRO_TEST', '')
         client_secret = os.environ.get('GCN_SECRET_PRO_TEST', '')
-    else:
+    elif env == 'prod':
         domain = 'gcn.nasa.gov'
-        print("Still need to get credentials for production mode")
+        client_id = os.environ.get('GCN_ID_PRO', '')
+        client_secret = os.environ.get('GCN_SECRET_PRO', '')
+    else:
+        print(f"env ({env}) not recognized")
         sys.exit(1)
+
 
     # Connect as a producer (client "dsa110")
     producer = Producer(client_id=client_id, client_secret=client_secret, domain=domain)
