@@ -2,6 +2,8 @@ from gcn_kafka import Producer
 import json
 import os
 
+env = 'test'
+
 if env == 'test':
     print("using test credentials")
     domain = 'test.gcn.nasa.gov'

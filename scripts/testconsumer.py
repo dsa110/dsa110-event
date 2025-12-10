@@ -1,6 +1,7 @@
 from gcn_kafka import Consumer
 import os
 
+env = 'test'
 
 if env == 'test':
     print("using test credentials")
