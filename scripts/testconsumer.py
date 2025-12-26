@@ -23,8 +23,8 @@ def main():
     elif args.env == 'prod':
         print("using prod credentials")
         domain = 'gcn.nasa.gov'
-        client_id = os.environ.get('GCN_ID_CON_PRO', '')
-        client_secret = os.environ.get('GCN_SECRET_CON_PRO', '')
+        client_id = os.environ.get('GCN_ID_CON', '')
+        client_secret = os.environ.get('GCN_SECRET_CON', '')
     else:
         print(f"env ({args.env}) not recognized")
         sys.exit(1)
