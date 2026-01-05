@@ -26,7 +26,7 @@ def gcn_send(jsonfile, env='prod', topic='gcn.notices.dsa110.frb'):
     producer = Producer(client_id=client_id, client_secret=client_secret, domain=domain)
 
     # Initialize and overload dict with json values
-    jsondata = {'$schema': 'https://gcn.nasa.gov/schema/v6.0.0/gcn/notices/mission/SchemaName.schema.json'}
+    jsondata = {'$schema': 'https://gcn.nasa.gov/schema/v6.1.0/gcn/notices/dsa110/frb.schema.json'}
     with open(jsonfile, 'r') as fp:
         trig = json.load(fp)
 
