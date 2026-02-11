@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 from gcn_kafka import Producer
 from astropy.time import Time
 
@@ -21,6 +22,13 @@ def gcn_send(jsonfile, env='prod', topic='gcn.notices.dsa110.frb'):
         print(f"env ({env}) not recognized")
         sys.exit(1)
 
+    if not client_id or not client_secret:
+        raise RuntimeError(
+            "GCN Kafka credentials not set. When running via subprocess (e.g. systemd), "
+            "ensure GCN_ID_PRO and GCN_SECRET_PRO (or GCN_ID_PRO_TEST/GCN_SECRET_PRO_TEST for test) "
+            "are in the process environment (e.g. Environment= or EnvironmentFile= in the unit, "
+            "or pass env=os.environ when calling subprocess)."
+        )
 
     # Connect as a producer (client "dsa110")
     producer = Producer(client_id=client_id, client_secret=client_secret, domain=domain)
