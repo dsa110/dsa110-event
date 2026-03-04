@@ -160,12 +160,14 @@ def send_voevent(inname, destination):
 @cli.command()
 @click.argument('jsonfile')
 @click.option('--env', default='prod')
-def gcn_send(jsonfile, env):
-    """ Read trigger jsonfile and send a GCN notice
+@click.option('--retract', is_flag=True, help='Send a retraction notice for this trigger (same topic, v6.1.1 schema).')
+@click.option('--description', default=None, help='Description for retraction notice (default: human-issued retraction).')
+def gcn_send(jsonfile, env, retract, description):
+    """ Read trigger jsonfile and send a GCN notice (initial or retraction).
     """
 
     assert os.path.exists(jsonfile), f"jsonfile {jsonfile} not found."
-    gcn.gcn_send(jsonfile, env=env)
+    gcn.gcn_send(jsonfile, env=env, retract=retract, description=description)
 
 
 @cli.command()

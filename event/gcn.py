@@ -4,10 +4,9 @@ import sys
 from gcn_kafka import Producer
 from astropy.time import Time
 
-def gcn_send(jsonfile, env='prod', topic='gcn.notices.dsa110.frb'):
-    """ Use trigger json to send GCN notice
+def gcn_send(jsonfile, env='prod', topic='gcn.notices.dsa110.frb', retract=False, description=None):
+    """ Use trigger json to send GCN notice (initial or retraction).
     """
-
     if env == 'test':
         print("using test credentials")
         domain = 'test.gcn.nasa.gov'
@@ -33,22 +32,37 @@ def gcn_send(jsonfile, env='prod', topic='gcn.notices.dsa110.frb'):
     # Connect as a producer (client "dsa110")
     producer = Producer(client_id=client_id, client_secret=client_secret, domain=domain)
 
-    # Initialize and overload dict with json values
-    jsondata = {'$schema': 'https://gcn.nasa.gov/schema/v6.1.0/gcn/notices/dsa110/frb.schema.json'}
     with open(jsonfile, 'r') as fp:
         trig = json.load(fp)
 
-    jsondata["alert_type"] = "initial"
-    jsondata["trigger_time"] = Time(trig["mjds"], format="mjd").isot
-    jsondata["id"] = trig["trigname"]
-    jsondata["snr"] = trig["snr"]
-    jsondata["dm"] = trig["dm"]
-    jsondata["event_duration"] = 0.262144*trig["ibox"] # ms TODO: check
-    jsondata["ra"] = trig["ra"]
-    jsondata["dec"] = trig["dec"]
-    jsondata["ra_dec_error"] = [0.016, 0.016]  # 1' is about the zenith search beam width
-    jsondata["importance"] = trig["probability"]
-        
+    trigger_time_isot = Time(trig["mjds"], format="mjd").isot
+    trigname = trig["trigname"]
+
+    if retract:
+        # Retraction notice per v6.1.1 schema (frb.retraction.example.json)
+        jsondata = {
+            '$schema': 'https://gcn.nasa.gov/schema/v6.1.1/gcn/notices/dsa110/frb.schema.json',
+            'alert_type': 'retraction',
+            'id': trigname,
+            'trigger_time': trigger_time_isot,
+            'description': description or 'This alert was generated automatically by human-issued retraction.',
+        }
+        if 'trigger_time_error' in trig:
+            jsondata['trigger_time_error'] = trig['trigger_time_error']
+    else:
+        # Initial notice
+        jsondata = {'$schema': 'https://gcn.nasa.gov/schema/v6.1.0/gcn/notices/dsa110/frb.schema.json'}
+        jsondata["alert_type"] = "initial"
+        jsondata["trigger_time"] = trigger_time_isot
+        jsondata["id"] = trigname
+        jsondata["snr"] = trig["snr"]
+        jsondata["dm"] = trig["dm"]
+        jsondata["event_duration"] = 0.262144 * trig["ibox"]  # ms TODO: check
+        jsondata["ra"] = trig["ra"]
+        jsondata["dec"] = trig["dec"]
+        jsondata["ra_dec_error"] = [0.016, 0.016]  # 1' is about the zenith search beam width
+        jsondata["importance"] = trig["probability"]
+
     # JSON data converted to byte string format
     data = json.dumps(jsondata).encode("utf-8")
 
