@@ -3,7 +3,11 @@ import json
 import click
 import csv
 import subprocess
-from event import tns_api_bulk_report, caltechdata, voevent, gcn
+from event import tns_api_bulk_report, caltechdata, voevent
+try:
+    import gcn
+except ImportError:
+    print("gcn library not available")
 
 @click.group('dsaevent')
 def cli():
